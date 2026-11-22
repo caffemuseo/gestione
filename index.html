@@ -215,6 +215,12 @@
         </div>
 
         <div id="griglia-tavoli" class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4"></div>
+
+        <div class="max-w-7xl mx-auto mt-5 mb-3 flex items-center justify-between bg-slate-900 border border-slate-800 p-3 rounded-2xl">
+            <div class="flex items-center gap-2"><i class="fa-solid fa-bag-shopping text-sky-400 text-sm"></i><span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Asporto / Banco</span></div>
+            <button type="button" onclick="nuovoAsporto()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold active:scale-95 transition">+ Nuovo asporto</button>
+        </div>
+        <div id="griglia-asporto" class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4"></div>
     </main>
 
     <!-- ========================================== -->
@@ -684,6 +690,26 @@
         let ultimiProntoBar = new Set();
         let primoCaricamentoCompletato = false;
 
+        const NUM_ASPORTO = 10;
+
+        function idsTavoli() {
+            const a = [];
+            for (let i = 1; i <= appData.totalTavoli; i++) a.push(i);
+            for (let i = 1; i <= NUM_ASPORTO; i++) a.push(1000 + i);
+            return a;
+        }
+
+        function nomeTavolo(id) {
+            return Number(id) > 1000 ? `Asporto ${Number(id) - 1000}` : `Tavolo ${id}`;
+        }
+
+        function nuovoAsporto() {
+            for (let i = 1; i <= NUM_ASPORTO; i++) {
+                if (getTavolo(1000 + i).ordini.length === 0) { apriModalTavolo(1000 + i); return; }
+            }
+            alert("Tutti gli slot asporto sono occupati: chiudi un asporto già pagato.");
+        }
+
         function keyTavolo(id) {
             return `tavolo_${id}`;
         }
@@ -826,7 +852,7 @@
 
             const rawTavoli = appData.tavoli || {};
             const nuoviTavoli = {};
-            for (let i = 1; i <= appData.totalTavoli; i++) {
+            for (const i of idsTavoli()) {
                 const k = keyTavolo(i);
                 const candidato = rawTavoli[k] || rawTavoli[i] || (Array.isArray(rawTavoli) ? rawTavoli[i] : null);
                 nuoviTavoli[k] = normalizzaOggettoTavolo(candidato, i);
@@ -962,7 +988,7 @@
             const prontiCucina = new Set();
             const prontiBar = new Set();
 
-            for (let i = 1; i <= appData.totalTavoli; i++) {
+            for (const i of idsTavoli()) {
                 const tav = getTavolo(i);
                 if (tav.statoCucina === "in_attesa") attualiCucina.set(i, tav.ordini.filter(o => isProdottoCucina(o) && o.inviatoCucina && !o.prontoCucina).length);
                 if (tav.statoBar === "in_attesa") attualiBar.set(i, tav.ordini.filter(o => isProdottoBar(o) && o.inviatoBar && !o.prontoBar).length);
@@ -986,7 +1012,7 @@
 
         function notificaProntoReparto(reparto, idTavolo) {
             if (["cucina", "bar"].includes(ruoloDispositivo())) return;
-            mostraNotificaBanner(`${reparto} PRONTO - TAVOLO ${idTavolo}!`);
+            mostraNotificaBanner(`${reparto} PRONTO - ${nomeTavolo(idTavolo).toUpperCase()}!`);
             emettiSuonoNotifica();
             if ("vibrate" in navigator) navigator.vibrate([400, 150, 400]);
         }
@@ -1002,7 +1028,7 @@
         function notificaNuovaComandaReparto(reparto, idTavolo) {
             const r = ruoloDispositivo();
             if (r === "cameriere" || (r === "cucina" && reparto !== "CUCINA") || (r === "bar" && reparto !== "BAR")) return;
-            const msg = `NUOVO ORDINE ${reparto} - TAVOLO ${idTavolo}!`;
+            const msg = `NUOVO ORDINE ${reparto} - ${nomeTavolo(idTavolo).toUpperCase()}!`;
             mostraNotificaBanner(msg);
             emettiSuonoNotifica();
             if ("vibrate" in navigator) {
@@ -1011,7 +1037,7 @@
             if ("Notification" in window && Notification.permission === "granted") {
                 try {
                     new Notification(`${appData.nomeLocale} - ${reparto}`, {
-                        body: `Nuovo ordine arrivato per il Tavolo ${idTavolo}`,
+                        body: `Nuovo ordine arrivato per il ${nomeTavolo(idTavolo)}`,
                         tag: `ordine-${reparto}-${idTavolo}`,
                         renotify: true
                     });
@@ -1363,10 +1389,13 @@
             document.getElementById("input-num-tavoli").value = numTavoli;
             container.innerHTML = "";
 
-            for (let i = 1; i <= numTavoli; i++) {
+            const contAsporto = document.getElementById("griglia-asporto");
+            contAsporto.innerHTML = "";
+            for (const i of idsTavoli()) {
                 const tav = getTavolo(i);
                 const occupato = Array.isArray(tav.ordini) && tav.ordini.length > 0 && tav.stato !== "libero";
                 const totaleTavolo = sommaEuro(tav.ordini);
+                if (i > 1000 && !occupato) continue;
 
                 const statoStile = occupato
                     ? "bg-rose-600/25 border-rose-500 text-slate-100"
@@ -1396,7 +1425,7 @@
 
                 card.innerHTML = `
                     <div class="flex items-center justify-between gap-1 mb-2">
-                        <span class="font-bold text-base ${occupato ? "text-rose-300" : "text-emerald-300"}">Tavolo ${i}</span>
+                        <span class="font-bold text-base ${occupato ? "text-rose-300" : "text-emerald-300"}">${nomeTavolo(i)}</span>
                         <div class="flex items-center gap-1 flex-wrap justify-end">${badgesHTML}</div>
                     </div>
                     <div class="my-1.5">
@@ -1407,14 +1436,14 @@
                         <span>${occupato ? esc(tav.operatore || "--") : "--"}</span>
                     </div>
                 `;
-                container.appendChild(card);
+                (i > 1000 ? contAsporto : container).appendChild(card);
             }
         }
 
         function tavoliOccupatiOltre(n) {
             for (let i = n + 1; i <= appData.totalTavoli; i++) {
                 if (getTavolo(i).ordini.length > 0) {
-                    alert(`Il Tavolo ${i} ha ancora un ordine aperto: chiudilo prima di ridurre i tavoli.`);
+                    alert(`Il ${nomeTavolo(i)} ha ancora un ordine aperto: chiudilo prima di ridurre i tavoli.`);
                     return true;
                 }
             }
@@ -1497,7 +1526,7 @@
                 salvaTavoloSuCloud(idTavolo);
             }
 
-            document.getElementById("modal-tavolo-titolo").textContent = `Tavolo ${idTavolo}`;
+            document.getElementById("modal-tavolo-titolo").textContent = `${nomeTavolo(idTavolo)}`;
             document.getElementById("modal-tavolo-operatore").textContent = `Op: ${appData.operatoreCorrente}`;
 
             if (categoriaSelezionataIndex >= appData.menu.length) {
@@ -1760,7 +1789,7 @@
                 renderizzaVistaCucina();
                 renderizzaVistaBar();
                 aggiornaBadgeRepartiHeader();
-                mostraNotificaBanner(`TAVOLO ${idTavolo} LIBERO (VERDE) E INCASSATO!`);
+                mostraNotificaBanner(`${nomeTavolo(idTavolo).toUpperCase()} LIBERO (VERDE) E INCASSATO!`);
             }
         }
 
@@ -1924,7 +1953,7 @@
             container.innerHTML = "";
             let conteggioInAttesa = 0;
 
-            for (let i = 1; i <= appData.totalTavoli; i++) {
+            for (const i of idsTavoli()) {
                 const tav = getTavolo(i);
                 if (tav && tav.statoCucina === "in_attesa" && Array.isArray(tav.ordini) && tav.ordini.length > 0) {
                     const filtrati = tav.ordini.filter(o => isProdottoCucina(o) && o.inviatoCucina && !o.prontoCucina);
@@ -1945,7 +1974,7 @@
                         <div>
                             <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
                                 <div>
-                                    <span class="text-lg font-black text-amber-400">TAVOLO ${tav.id}</span>
+                                    <span class="text-lg font-black text-amber-400">${nomeTavolo(tav.id).toUpperCase()}</span>
                                     ${tav.oraInvioCucina ? `<span class="text-[11px] text-slate-400 ml-2"><i class="fa-regular fa-clock"></i> ${tav.oraInvioCucina}</span>${badgeAttesa(tav.tsInvioCucina)}` : ""}
                                 </div>
                                 <div class="flex items-center gap-2">
@@ -2014,7 +2043,7 @@
             container.innerHTML = "";
             let conteggioInAttesa = 0;
 
-            for (let i = 1; i <= appData.totalTavoli; i++) {
+            for (const i of idsTavoli()) {
                 const tav = getTavolo(i);
                 if (tav && tav.statoBar === "in_attesa" && Array.isArray(tav.ordini) && tav.ordini.length > 0) {
                     const filtrati = tav.ordini.filter(o => isProdottoBar(o) && o.inviatoBar && !o.prontoBar);
@@ -2035,7 +2064,7 @@
                         <div>
                             <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
                                 <div>
-                                    <span class="text-lg font-black text-sky-400">TAVOLO ${tav.id}</span>
+                                    <span class="text-lg font-black text-sky-400">${nomeTavolo(tav.id).toUpperCase()}</span>
                                     ${tav.oraInvioBar ? `<span class="text-[11px] text-slate-400 ml-2"><i class="fa-regular fa-clock"></i> ${tav.oraInvioBar}</span>${badgeAttesa(tav.tsInvioBar)}` : ""}
                                 </div>
                                 <div class="flex items-center gap-2">
@@ -2084,7 +2113,7 @@
         function aggiornaBadgeRepartiHeader() {
             let cntCucina = 0;
             let cntBar = 0;
-            for (let i = 1; i <= appData.totalTavoli; i++) {
+            for (const i of idsTavoli()) {
                 const tav = getTavolo(i);
                 if (tav.statoCucina === "in_attesa") cntCucina++;
                 if (tav.statoBar === "in_attesa") cntBar++;
@@ -2114,7 +2143,7 @@
             if (!tavoloSelezionatoId) return;
             const tav = getTavolo(tavoloSelezionatoId);
 
-            mostraDettaglioScheda(`Dettaglio Tavolo ${tav.id} (In corso)`, {
+            mostraDettaglioScheda(`Dettaglio ${nomeTavolo(tav.id)} (In corso)`, {
                 totale: sommaEuro(tav.ordini),
                 oraApertura: tav.oraApertura || "--",
                 operatoreApertura: tav.operatoreApertura || tav.operatore || "--",
@@ -2212,7 +2241,7 @@
                 card.innerHTML = `
                     <div class="min-w-0">
                         <div class="flex items-center gap-2">
-                            <span class="font-bold text-sm text-amber-400">Tavolo ${rec.tavolo}</span>
+                            <span class="font-bold text-sm text-amber-400">${nomeTavolo(rec.tavolo)}</span>
                             <span class="text-xs font-black text-emerald-400">€ ${Number(rec.totale).toFixed(2)}</span>
                         </div>
                         <div class="text-[11px] text-slate-400 mt-0.5 truncate">
@@ -2230,12 +2259,12 @@
         function apriDettaglioStorico(idx) {
             const rec = appData.storico[idx];
             if (!rec) return;
-            mostraDettaglioScheda(`Storico - Tavolo ${rec.tavolo}`, rec);
+            mostraDettaglioScheda(`Storico - ${nomeTavolo(rec.tavolo)}`, rec);
         }
 
         function esportaStoricoCSV() {
             const righe = ["Chiusura;Tavolo;Operatore;Articoli;Totale;Pagamento"];
-            appData.storico.forEach(s => righe.push([s.oraChiusura, s.tavolo, s.operatoreChiusura, (s.ordini || []).length, Number(s.totale).toFixed(2).replace(".", ","), s.metodo || ""].join(";")));
+            appData.storico.forEach(s => righe.push([s.oraChiusura, nomeTavolo(s.tavolo), s.operatoreChiusura, (s.ordini || []).length, Number(s.totale).toFixed(2).replace(".", ","), s.metodo || ""].join(";")));
             const a = document.createElement("a");
             a.href = URL.createObjectURL(new Blob(["\ufeff" + righe.join("\n")], { type: "text/csv;charset=utf-8" }));
             a.download = "storico_caffe_museo_" + new Date().toISOString().slice(0, 10) + ".csv";
@@ -2314,7 +2343,7 @@
             areaStampa.innerHTML = `
                 ${logoHTML}
                 <div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:4px;">${esc((appData.nomeLocale || "CAFFÈ MUSEO").toUpperCase())}</div>
-                <div style="text-align:center; font-size:11px; margin-bottom:8px;">PRE-CONTO TAVOLO ${tav.id}</div>
+                <div style="text-align:center; font-size:11px; margin-bottom:8px;">PRE-CONTO ${nomeTavolo(tav.id).toUpperCase()}</div>
                 <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
                 <div>Data: ${dataOraCorrenteStr()}</div>
                 <div>Cameriere: ${esc(tav.operatore || "--")}</div>
@@ -2350,7 +2379,7 @@
 
             areaStampa.innerHTML = `
                 <div style="text-align:center; font-weight:bold; font-size:18px;">*** TICKET ${reparto} ***</div>
-                <div style="text-align:center; font-weight:bold; font-size:20px; margin:4px 0;">TAVOLO ${tav.id}</div>
+                <div style="text-align:center; font-weight:bold; font-size:20px; margin:4px 0;">${nomeTavolo(tav.id).toUpperCase()}</div>
                 <div>Ora: ${oraCorrenteStr()}</div>
                 <div>Cameriere: ${esc(tav.operatore || "--")}</div>
                 <hr style="border:none; border-top:2px solid #000; margin:6px 0;">
