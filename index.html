@@ -12,20 +12,6 @@
             touch-action: manipulation;
         }
 
-        /* Nasconde eventuali badge flottanti esterni (es. Powered by Netlify Drop) */
-        iframe[src*="netlify"],
-        [class*="netlify"],
-        [id*="netlify"],
-        a[href*="netlify.com"],
-        div[style*="z-index: 2147483647"] {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-            width: 0 !important;
-            height: 0 !important;
-        }
-
         @media print {
             body * {
                 visibility: hidden !important;
@@ -246,7 +232,6 @@
             <div class="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
                 <!-- Colonna Menu Prodotti -->
                 <div id="colonna-menu-tavolo" class="flex-1 flex flex-col overflow-hidden min-h-0">
-                    <!-- Barra rapida superiore su mobile -->
                     <div class="md:hidden px-3 py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0">
                         <div>
                             <div class="text-[10px] uppercase text-slate-400 font-bold">Totale provvisorio</div>
@@ -261,9 +246,9 @@
                     <div id="container-prodotti" class="flex-1 overflow-y-auto p-3 pb-24 grid grid-cols-2 sm:grid-cols-3 gap-2.5 content-start"></div>
                 </div>
 
-                <!-- Colonna Riepilogo Ordine Inserito (COMANDI POSIZIONATI IN ALTO, MAI COPERTI DAL FONDO) -->
+                <!-- Colonna Riepilogo Ordine Inserito -->
                 <div id="colonna-ordine-tavolo" class="hidden md:flex w-full md:w-96 flex-1 md:flex-initial flex-col bg-slate-900/95 shrink-0 min-h-0 md:border-l border-slate-800">
-                    <!-- Pannello Comandi in ALTO: Totale, Invia Ordine, Conto, Pagato/Libera sempre liberi da banner inferiori -->
+                    <!-- Pannello Comandi -->
                     <div class="p-3 bg-slate-950 border-b border-slate-800 shrink-0 space-y-2 shadow-md">
                         <div class="flex justify-between items-center text-slate-200">
                             <div class="flex items-center gap-2">
@@ -559,20 +544,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
     <script>
-        // =========================================================================
-        // RIMOZIONE EVENTUALE BADGE FLOTTANTE HOSTING (ES. NETLIFY DROP)
-        // =========================================================================
-        function rimuoviBadgeEsterni() {
-            try {
-                document.querySelectorAll('iframe[src*="netlify"], a[href*="netlify.com"], [id*="netlify"], [class*="netlify"]').forEach(el => el.remove());
-                document.querySelectorAll('body > div, body > a, body > iframe').forEach(el => {
-                    if (!el.id && el.innerText && el.innerText.toLowerCase().includes('netlify')) {
-                        el.remove();
-                    }
-                });
-            } catch (e) {}
-        }
-
         // =========================================================================
         // CONFIGURAZIONE FIREBASE CAFFÈ MUSEO
         // =========================================================================
@@ -2512,8 +2483,6 @@
         }
 
         window.addEventListener("DOMContentLoaded", () => {
-            rimuoviBadgeEsterni();
-            setInterval(rimuoviBadgeEsterni, 1500);
             caricaDatiIniziali();
         });
     </script>
