@@ -301,6 +301,7 @@
                             <span id="modal-tavolo-totale" class="text-xl font-black text-amber-400">€ 0.00</span>
                         </div>
 
+                        <button type="button" onclick="apriModalSupplemento()" class="w-full bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold py-2 rounded-xl text-xs border border-slate-700 transition active:scale-95"><i class="fa-solid fa-plus"></i> Supplemento</button>
                         <div class="grid grid-cols-3 gap-2">
                             <button type="button" id="btn-invia-ordine-tavolo" onclick="inviaOrdineAutomatico()" class="col-span-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 px-3 rounded-xl text-xs uppercase tracking-wide flex items-center justify-center gap-1.5 shadow transition active:scale-95">
                                 <i class="fa-solid fa-paper-plane"></i> <span id="txt-btn-invia-ordine">Invia Ordine</span>
@@ -559,6 +560,18 @@
             <div class="flex gap-2">
                 <button type="button" onclick="chiudiEditProdotto()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded-xl text-xs font-bold transition">Annulla</button>
                 <button type="button" onclick="salvaProdottoModificato()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 py-2.5 rounded-xl text-xs font-bold transition">Salva Modifiche</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-supplemento" class="hidden fixed inset-0 z-[75] bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="w-full max-w-xs bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl">
+            <h3 class="text-base font-bold text-sky-300 mb-3">Supplemento</h3>
+            <input id="sup-desc" type="text" maxlength="40" placeholder="Descrizione (es. Servizio al tavolo)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 mb-2 focus:outline-none focus:border-sky-500">
+            <input id="sup-prezzo" type="text" inputmode="decimal" placeholder="Prezzo € (es. 1,50)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 mb-3 focus:outline-none focus:border-sky-500">
+            <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="chiudiModalSupplemento()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">Annulla</button>
+                <button type="button" onclick="aggiungiSupplemento()" class="bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl text-xs transition">Aggiungi</button>
             </div>
         </div>
     </div>
@@ -834,6 +847,7 @@
                         nome: cat.nome || "Categoria",
                         inCucina: Boolean(cat.inCucina),
                         inBar: Boolean(cat.inBar),
+                        disattivata: Boolean(cat.disattivata),
                         prodotti: prodsRaw.map(p => ({
                             id: p.id || ("p_" + Math.random().toString(36).slice(2, 7)),
                             nome: p.nome || "Prodotto",
@@ -1555,6 +1569,7 @@
                 const btn = document.createElement("button");
                 btn.type = "button";
                 btn.className = `px-3.5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition border flex items-center gap-1.5 ${idx === categoriaSelezionataIndex ? "bg-amber-500 text-slate-950 border-amber-400" : "bg-slate-900 text-slate-300 border-slate-800 hover:bg-slate-800"}`;
+                if (cat.disattivata) btn.className += " opacity-40 line-through";
                 const icone = `${cat.inCucina ? '<i class="fa-solid fa-utensils text-[10px]"></i>' : ""}${cat.inBar ? '<i class="fa-solid fa-mug-hot text-[10px]"></i>' : ""}`;
                 btn.innerHTML = `<span>${esc(cat.nome)}</span>${icone}`;
                 btn.onclick = () => {
@@ -1574,7 +1589,7 @@
             if (!cat || !Array.isArray(cat.prodotti)) return;
 
             cat.prodotti.forEach((p) => {
-                const isEsaurito = Boolean(p.esaurito);
+                const isEsaurito = Boolean(p.esaurito) || Boolean(cat.disattivata);
                 const card = document.createElement("button");
                 card.type = "button";
 
@@ -1603,8 +1618,52 @@
             });
         }
 
+        function apriModalSupplemento() {
+            if (!tavoloSelezionatoId) return;
+            document.getElementById("sup-desc").value = "";
+            document.getElementById("sup-prezzo").value = "";
+            document.getElementById("modal-supplemento").classList.remove("hidden");
+        }
+
+        function chiudiModalSupplemento() {
+            document.getElementById("modal-supplemento").classList.add("hidden");
+        }
+
+        function aggiungiSupplemento() {
+            const desc = document.getElementById("sup-desc").value.trim() || "Supplemento";
+            const prezzo = parseFloat(document.getElementById("sup-prezzo").value.replace(",", "."));
+            if (!isFinite(prezzo) || prezzo <= 0) {
+                alert("Inserisci un prezzo valido maggiore di zero (es. 1,50).");
+                return;
+            }
+            const tav = getTavolo(tavoloSelezionatoId);
+            if (tav.ordini.length === 0) {
+                tav.stato = "occupato";
+                tav.oraApertura = oraCorrenteStr();
+                tav.operatoreApertura = appData.operatoreCorrente;
+                tav.operatore = appData.operatoreCorrente;
+            }
+            const uid = Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+            tav.ordini.push({
+                uuid: uid,
+                id: "sup_" + uid,
+                nome: desc,
+                prezzo: Math.round(prezzo * 100) / 100,
+                nota: "",
+                inCucina: false,
+                inBar: false,
+                inviatoCucina: false,
+                inviatoBar: false,
+                supplemento: true
+            });
+            salvaTavoloSuCloud(tavoloSelezionatoId);
+            renderizzaListaOrdiniTavolo();
+            renderizzaTavoli();
+            chiudiModalSupplemento();
+        }
+
         function aggiungiAlTavolo(prodotto) {
-            if (!tavoloSelezionatoId || prodotto.esaurito) return;
+            if (!tavoloSelezionatoId || prodotto.esaurito || (trovaCategoriaProdotto(prodotto) || {}).disattivata) return;
             const tav = getTavolo(tavoloSelezionatoId);
 
             if (tav.ordini.length === 0) {
@@ -2542,6 +2601,10 @@
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="font-bold text-sm text-amber-400">${esc(cat.nome)}</span>
                             <label class="flex items-center gap-1.5 cursor-pointer bg-slate-800 px-2 py-1 rounded-lg border border-slate-700">
+                                <input type="checkbox" ${cat.disattivata ? "" : "checked"} onchange="toggleCategoriaAttiva(${catIdx}, this.checked)" class="accent-emerald-500">
+                                <span class="text-[11px] text-slate-300 font-medium">Attiva</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 cursor-pointer bg-slate-800 px-2 py-1 rounded-lg border border-slate-700">
                                 <input type="checkbox" ${cat.inCucina ? "checked" : ""} onchange="toggleRepartoCategoria(${catIdx}, 'inCucina', this.checked)" class="accent-amber-500">
                                 <span class="text-[11px] text-slate-300 font-medium">🍳 Cucina</span>
                             </label>
@@ -2569,6 +2632,16 @@
                 `;
                 container.appendChild(catBox);
             });
+        }
+
+        function toggleCategoriaAttiva(catIdx, attiva) {
+            const cat = appData.menu[catIdx];
+            if (!cat) return;
+            cat.disattivata = !attiva;
+            salvaDati();
+            renderizzaAdminCategorieMenu();
+            renderizzaCategorieTab();
+            if (tavoloSelezionatoId) renderizzaProdottiTab();
         }
 
         function toggleProdottoEsaurito(catIdx, prodIdx) {
