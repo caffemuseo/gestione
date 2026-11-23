@@ -2600,6 +2600,7 @@
                     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2 mb-3">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="font-bold text-sm text-amber-400">${esc(cat.nome)}</span>
+                            <button type="button" onclick="rinominaCategoria(${catIdx})" class="w-7 h-7 bg-amber-500/20 text-amber-300 rounded flex items-center justify-center" title="Rinomina categoria"><i class="fa-solid fa-pencil text-[10px]"></i></button>
                             <label class="flex items-center gap-1.5 cursor-pointer bg-slate-800 px-2 py-1 rounded-lg border border-slate-700">
                                 <input type="checkbox" ${cat.disattivata ? "" : "checked"} onchange="toggleCategoriaAttiva(${catIdx}, this.checked)" class="accent-emerald-500">
                                 <span class="text-[11px] text-slate-300 font-medium">Attiva</span>
@@ -2667,6 +2668,19 @@
                 salvaDati();
                 renderizzaAdminCategorieMenu();
             }
+        }
+
+        function rinominaCategoria(catIdx) {
+            const cat = appData.menu[catIdx];
+            if (!cat) return;
+            const nuovo = prompt("Nuovo nome della categoria:", cat.nome);
+            if (nuovo === null) return;
+            const nome = nuovo.trim().slice(0, 40);
+            if (!nome) { alert("Il nome non può essere vuoto."); return; }
+            cat.nome = nome;
+            salvaDati();
+            renderizzaAdminCategorieMenu();
+            renderizzaCategorieTab();
         }
 
         function eliminaCategoria(catIdx) {
