@@ -301,7 +301,10 @@
                             <span id="modal-tavolo-totale" class="text-xl font-black text-amber-400">€ 0.00</span>
                         </div>
 
-                        <button type="button" onclick="apriModalSupplemento()" class="w-full bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold py-2 rounded-xl text-xs border border-slate-700 transition active:scale-95"><i class="fa-solid fa-plus"></i> Supplemento</button>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" onclick="apriModalNotaOrdine()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold py-2 rounded-xl text-xs border border-slate-700 transition active:scale-95"><i class="fa-solid fa-note-sticky"></i> Nota ordine</button>
+                            <button type="button" onclick="apriModalSupplemento()" class="bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold py-2 rounded-xl text-xs border border-slate-700 transition active:scale-95"><i class="fa-solid fa-plus"></i> Supplemento</button>
+                        </div>
                         <div class="grid grid-cols-3 gap-2">
                             <button type="button" id="btn-invia-ordine-tavolo" onclick="inviaOrdineAutomatico()" class="col-span-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 px-3 rounded-xl text-xs uppercase tracking-wide flex items-center justify-center gap-1.5 shadow transition active:scale-95">
                                 <i class="fa-solid fa-paper-plane"></i> <span id="txt-btn-invia-ordine">Invia Ordine</span>
@@ -376,7 +379,7 @@
             </button>
         </div>
 
-        <div id="container-ordini-cucina" class="flex-1 overflow-y-auto p-4 pb-28 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="container-ordini-cucina" class="flex-1 overflow-y-auto p-4 pb-28 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
     </div>
 
     <!-- ========================================== -->
@@ -396,7 +399,7 @@
             </button>
         </div>
 
-        <div id="container-ordini-bar" class="flex-1 overflow-y-auto p-4 pb-28 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="container-ordini-bar" class="flex-1 overflow-y-auto p-4 pb-28 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
     </div>
 
     <!-- ========================================== -->
@@ -560,6 +563,18 @@
             <div class="flex gap-2">
                 <button type="button" onclick="chiudiEditProdotto()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded-xl text-xs font-bold transition">Annulla</button>
                 <button type="button" onclick="salvaProdottoModificato()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 py-2.5 rounded-xl text-xs font-bold transition">Salva Modifiche</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-nota-ordine" class="hidden fixed inset-0 z-[75] bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="w-full max-w-xs bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl">
+            <h3 class="text-base font-bold text-amber-300 mb-1">Nota ordine</h3>
+            <p class="text-xs text-slate-400 mb-3">Compare su cucina e bar e nel ticket (es. allergia, "porta via", fretta).</p>
+            <textarea id="nota-ordine-testo" rows="3" maxlength="120" placeholder="Scrivi la nota..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 mb-3 focus:outline-none focus:border-amber-500"></textarea>
+            <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="chiudiModalNotaOrdine()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">Annulla</button>
+                <button type="button" onclick="salvaNotaOrdine()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-2.5 rounded-xl text-xs transition">Salva</button>
             </div>
         </div>
     </div>
@@ -812,6 +827,7 @@
                 oraProntoBar: isOccupato ? (raw.oraProntoBar || "") : "",
                 tsInvioCucina: isOccupato ? (raw.tsInvioCucina || 0) : 0,
                 tsInvioBar: isOccupato ? (raw.tsInvioBar || 0) : 0,
+                notaOrdine: isOccupato ? String(raw.notaOrdine || "") : "",
                 updatedAt: raw.updatedAt || Date.now()
             };
         }
@@ -1618,6 +1634,30 @@
             });
         }
 
+        function apriModalNotaOrdine() {
+            const tav = tavoloSelezionatoId ? getTavolo(tavoloSelezionatoId) : null;
+            if (!tav || tav.ordini.length === 0) { alert("Aggiungi prima almeno un prodotto."); return; }
+            document.getElementById("nota-ordine-testo").value = tav.notaOrdine || "";
+            document.getElementById("modal-nota-ordine").classList.remove("hidden");
+        }
+
+        function chiudiModalNotaOrdine() {
+            document.getElementById("modal-nota-ordine").classList.add("hidden");
+        }
+
+        function salvaNotaOrdine() {
+            const tav = getTavolo(tavoloSelezionatoId);
+            tav.notaOrdine = document.getElementById("nota-ordine-testo").value.trim().slice(0, 120);
+            salvaTavoloSuCloud(tavoloSelezionatoId);
+            renderizzaVistaCucina();
+            renderizzaVistaBar();
+            chiudiModalNotaOrdine();
+        }
+
+        function notaOrdineHTML(tav) {
+            return tav.notaOrdine ? `<div class="bg-amber-500/15 border border-amber-500/40 text-amber-200 text-base md:text-xl font-semibold rounded-lg px-2 py-1.5 mb-3"><i class="fa-solid fa-note-sticky"></i> ${esc(tav.notaOrdine)}</div>` : "";
+        }
+
         function apriModalSupplemento() {
             if (!tavoloSelezionatoId) return;
             document.getElementById("sup-desc").value = "";
@@ -1980,7 +2020,7 @@
             if (!ts) return "";
             const min = Math.floor((Date.now() - ts) / 60000);
             const col = min >= 10 ? "bg-rose-500 text-white" : min >= 5 ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-slate-300";
-            return `<span class="ml-2 text-[11px] font-black px-1.5 py-0.5 rounded-full ${col}">${min} min</span>`;
+            return `<span class="ml-2 text-sm md:text-base font-black px-2 py-0.5 rounded-full ${col}">${min} min</span>`;
         }
 
         function ordinaCardPerAttesa(c) {
@@ -2020,9 +2060,9 @@
                     conteggioInAttesa++;
 
                     const listaHTML = articoliCucina.map(art => `
-                        <li class="py-1.5 border-b border-slate-800 last:border-0">
-                            <span class="font-bold text-slate-100 text-sm">${art.quantita > 1 ? `${art.quantita}× ` : ""}${esc(art.nome)}</span>
-                            ${art.nota ? `<p class="text-xs text-amber-400 font-semibold mt-0.5"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(art.nota)}</p>` : ""}
+                        <li class="py-2.5 border-b border-slate-800 last:border-0">
+                            <span class="font-bold text-slate-100 text-lg md:text-2xl">${art.quantita > 1 ? `${art.quantita}× ` : ""}${esc(art.nome)}</span>
+                            ${art.nota ? `<p class="text-base md:text-xl text-amber-400 font-semibold mt-0.5"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(art.nota)}</p>` : ""}
                         </li>
                     `).join("");
 
@@ -2033,8 +2073,8 @@
                         <div>
                             <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
                                 <div>
-                                    <span class="text-lg font-black text-amber-400">${nomeTavolo(tav.id).toUpperCase()}</span>
-                                    ${tav.oraInvioCucina ? `<span class="text-[11px] text-slate-400 ml-2"><i class="fa-regular fa-clock"></i> ${tav.oraInvioCucina}</span>${badgeAttesa(tav.tsInvioCucina)}` : ""}
+                                    <span class="text-2xl md:text-4xl font-black text-amber-400">${nomeTavolo(tav.id).toUpperCase()}</span>
+                                    ${tav.oraInvioCucina ? `<span class="text-sm md:text-base text-slate-400 ml-2"><i class="fa-regular fa-clock"></i> ${tav.oraInvioCucina}</span>${badgeAttesa(tav.tsInvioCucina)}` : ""}
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <span class="text-xs bg-slate-800 text-slate-300 px-2 py-1 rounded-lg border border-slate-700">${esc(tav.operatore || "--")}</span>
@@ -2043,9 +2083,9 @@
                                     </button>
                                 </div>
                             </div>
-                            <ul class="space-y-1 mb-4">${listaHTML}</ul>
+                            ${notaOrdineHTML(tav)}<ul class="space-y-1 mb-4">${listaHTML}</ul>
                         </div>
-                        <button type="button" onclick="segnaOrdineProntoCucina(${tav.id})" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black py-3 rounded-xl text-xs tracking-wider uppercase transition flex items-center justify-center gap-2 shadow-lg">
+                        <button type="button" onclick="segnaOrdineProntoCucina(${tav.id})" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black py-4 rounded-xl text-sm md:text-xl tracking-wider uppercase transition flex items-center justify-center gap-2 shadow-lg">
                             <i class="fa-solid fa-circle-check text-base"></i> PRONTO CUCINA
                         </button>
                     `;
@@ -2110,9 +2150,9 @@
                     conteggioInAttesa++;
 
                     const listaHTML = articoliBar.map(art => `
-                        <li class="py-1.5 border-b border-slate-800 last:border-0">
-                            <span class="font-bold text-slate-100 text-sm">${art.quantita > 1 ? `${art.quantita}× ` : ""}${esc(art.nome)}</span>
-                            ${art.nota ? `<p class="text-xs text-sky-400 font-semibold mt-0.5"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(art.nota)}</p>` : ""}
+                        <li class="py-2.5 border-b border-slate-800 last:border-0">
+                            <span class="font-bold text-slate-100 text-lg md:text-2xl">${art.quantita > 1 ? `${art.quantita}× ` : ""}${esc(art.nome)}</span>
+                            ${art.nota ? `<p class="text-base md:text-xl text-sky-400 font-semibold mt-0.5"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(art.nota)}</p>` : ""}
                         </li>
                     `).join("");
 
@@ -2123,8 +2163,8 @@
                         <div>
                             <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
                                 <div>
-                                    <span class="text-lg font-black text-sky-400">${nomeTavolo(tav.id).toUpperCase()}</span>
-                                    ${tav.oraInvioBar ? `<span class="text-[11px] text-slate-400 ml-2"><i class="fa-regular fa-clock"></i> ${tav.oraInvioBar}</span>${badgeAttesa(tav.tsInvioBar)}` : ""}
+                                    <span class="text-2xl md:text-4xl font-black text-sky-400">${nomeTavolo(tav.id).toUpperCase()}</span>
+                                    ${tav.oraInvioBar ? `<span class="text-sm md:text-base text-slate-400 ml-2"><i class="fa-regular fa-clock"></i> ${tav.oraInvioBar}</span>${badgeAttesa(tav.tsInvioBar)}` : ""}
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <span class="text-xs bg-slate-800 text-slate-300 px-2 py-1 rounded-lg border border-slate-700">${esc(tav.operatore || "--")}</span>
@@ -2133,9 +2173,9 @@
                                     </button>
                                 </div>
                             </div>
-                            <ul class="space-y-1 mb-4">${listaHTML}</ul>
+                            ${notaOrdineHTML(tav)}<ul class="space-y-1 mb-4">${listaHTML}</ul>
                         </div>
-                        <button type="button" onclick="segnaOrdineProntoBar(${tav.id})" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black py-3 rounded-xl text-xs tracking-wider uppercase transition flex items-center justify-center gap-2 shadow-lg">
+                        <button type="button" onclick="segnaOrdineProntoBar(${tav.id})" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black py-4 rounded-xl text-sm md:text-xl tracking-wider uppercase transition flex items-center justify-center gap-2 shadow-lg">
                             <i class="fa-solid fa-circle-check text-base"></i> PRONTO BAR
                         </button>
                     `;
@@ -2441,6 +2481,7 @@
                 <div style="text-align:center; font-weight:bold; font-size:20px; margin:4px 0;">${nomeTavolo(tav.id).toUpperCase()}</div>
                 <div>Ora: ${oraCorrenteStr()}</div>
                 <div>Cameriere: ${esc(tav.operatore || "--")}</div>
+                ${tav.notaOrdine ? `<div>NOTA: ${esc(tav.notaOrdine)}</div>` : ""}
                 <hr style="border:none; border-top:2px solid #000; margin:6px 0;">
                 ${articoliHTML}
                 <hr style="border:none; border-top:2px solid #000; margin:6px 0;">
