@@ -374,10 +374,15 @@
                     <span class="text-[10px] text-slate-400">Comande cucina in preparazione</span>
                 </div>
             </div>
-            <button type="button" onclick="chiudiVistaCucina()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">
+            <div class="flex items-center gap-2">
+                <button type="button" id="btn-pronti-cucina" onclick="togglePannelloPronti('cucina')" class="bg-emerald-600/20 text-emerald-300 border border-emerald-600/40 px-3 py-2 rounded-xl text-xs font-bold transition">Pronti (0)</button>
+                <button type="button" onclick="chiudiVistaCucina()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">
                 <i class="fa-solid fa-xmark mr-1"></i> Chiudi
             </button>
+            </div>
         </div>
+
+        <div id="pannello-pronti-cucina" class="hidden bg-slate-900/60 border-b border-slate-800 p-3 space-y-2 max-h-[45vh] overflow-y-auto shrink-0"></div>
 
         <div id="container-ordini-cucina" class="flex-1 overflow-y-auto p-4 pb-28 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
     </div>
@@ -394,10 +399,15 @@
                     <span class="text-[10px] text-slate-400">Caffetteria & bevande in preparazione</span>
                 </div>
             </div>
-            <button type="button" onclick="chiudiVistaBar()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">
+            <div class="flex items-center gap-2">
+                <button type="button" id="btn-pronti-bar" onclick="togglePannelloPronti('bar')" class="bg-emerald-600/20 text-emerald-300 border border-emerald-600/40 px-3 py-2 rounded-xl text-xs font-bold transition">Pronti (0)</button>
+                <button type="button" onclick="chiudiVistaBar()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">
                 <i class="fa-solid fa-xmark mr-1"></i> Chiudi
             </button>
+            </div>
         </div>
+
+        <div id="pannello-pronti-bar" class="hidden bg-slate-900/60 border-b border-slate-800 p-3 space-y-2 max-h-[45vh] overflow-y-auto shrink-0"></div>
 
         <div id="container-ordini-bar" class="flex-1 overflow-y-auto p-4 pb-28 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
     </div>
@@ -1632,11 +1642,16 @@
                         </div>
                     `;
                 } else {
-                    card.className = "bg-slate-900 border border-slate-800 hover:border-amber-500/50 p-3.5 rounded-2xl flex flex-col justify-between text-left transition active:scale-95 shadow";
+                    const tavCorr = tavoloSelezionatoId ? getTavolo(tavoloSelezionatoId) : null;
+                    const qta = tavCorr ? tavCorr.ordini.filter(o => o.id === p.id).length : 0;
+                    card.className = `border p-3.5 rounded-2xl flex flex-col justify-between text-left transition active:scale-95 shadow ${qta > 0 ? "bg-rose-500/15 border-rose-500" : "bg-slate-900 border-slate-800 hover:border-amber-500/50"}`;
                     card.onclick = () => aggiungiAlTavolo(p);
                     card.innerHTML = `
-                        <span class="font-bold text-xs sm:text-sm text-slate-200 line-clamp-2">${esc(p.nome)}</span>
-                        <span class="font-black text-amber-400 text-sm mt-2">€ ${Number(p.prezzo).toFixed(2)}</span>
+                        <div class="flex items-start justify-between gap-1">
+                            <span class="font-bold text-xs sm:text-sm ${qta > 0 ? "text-rose-100" : "text-slate-200"} line-clamp-2">${esc(p.nome)}</span>
+                            ${qta > 0 ? `<span class="bg-rose-500 text-white text-[11px] font-black px-1.5 py-0.5 rounded-full shrink-0">×${qta}</span>` : ""}
+                        </div>
+                        <span class="font-black ${qta > 0 ? "text-rose-300" : "text-amber-400"} text-sm mt-2">€ ${Number(p.prezzo).toFixed(2)}</span>
                     `;
                 }
 
@@ -1762,6 +1777,7 @@
         }
 
         function renderizzaListaOrdiniTavolo() {
+            renderizzaProdottiTab();
             const container = document.getElementById("lista-ordini-tavolo");
             container.innerHTML = "";
             if (!tavoloSelezionatoId) return;
@@ -2104,6 +2120,7 @@
             }
 
             ordinaCardPerAttesa(container);
+            renderizzaPronti("cucina");
             if (conteggioInAttesa === 0) {
                 container.innerHTML = `
                     <div class="col-span-full py-16 text-center text-slate-500">
@@ -2112,6 +2129,62 @@
                     </div>
                 `;
             }
+        }
+
+        function righePronte(tav, reparto) {
+            return tav.ordini.filter(o => reparto === "cucina"
+                ? (isProdottoCucina(o) && o.inviatoCucina && o.prontoCucina)
+                : (isProdottoBar(o) && o.inviatoBar && o.prontoBar));
+        }
+
+        function togglePannelloPronti(reparto) {
+            document.getElementById("pannello-pronti-" + reparto).classList.toggle("hidden");
+        }
+
+        function renderizzaPronti(reparto) {
+            const pannello = document.getElementById("pannello-pronti-" + reparto);
+            const btn = document.getElementById("btn-pronti-" + reparto);
+            if (!pannello || !btn) return;
+            let html = "";
+            let n = 0;
+            for (const i of idsTavoli()) {
+                const tav = getTavolo(i);
+                const righe = righePronte(tav, reparto);
+                if (righe.length === 0) continue;
+                n++;
+                const ora = reparto === "cucina" ? tav.oraProntoCucina : tav.oraProntoBar;
+                const lista = raggruppaArticoli(righe).map(a => `${a.quantita > 1 ? a.quantita + "× " : ""}${esc(a.nome)}`).join(", ");
+                html += `<div class="flex items-center justify-between gap-3 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5">
+                    <div class="min-w-0">
+                        <div class="font-black text-sm md:text-lg text-slate-100">${esc(nomeTavolo(i))}${ora ? ` <span class="text-xs text-slate-400 font-semibold">· pronto ${esc(ora)}</span>` : ""}</div>
+                        <div class="text-xs md:text-base text-slate-400 truncate">${lista}</div>
+                    </div>
+                    <button type="button" onclick="riapriOrdineReparto(${i}, '${reparto}')" class="shrink-0 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-3 py-2 rounded-lg text-xs md:text-sm active:scale-95 transition">Riapri</button>
+                </div>`;
+            }
+            btn.innerHTML = `<i class="fa-solid fa-clock-rotate-left mr-1"></i> Pronti (${n}) <i class="fa-solid fa-chevron-down ml-1 text-[10px]"></i>`;
+            pannello.innerHTML = html || '<p class="text-xs text-slate-500 text-center py-2">Nessun ordine pronto ancora aperto.</p>';
+        }
+
+        function riapriOrdineReparto(idTavolo, reparto) {
+            const tav = getTavolo(idTavolo);
+            if (!tav) return;
+            righePronte(tav, reparto).forEach(o => { if (reparto === "cucina") o.prontoCucina = false; else o.prontoBar = false; });
+            if (reparto === "cucina") {
+                if (tav.statoCucina !== "in_attesa") tav.tsInvioCucina = Date.now();
+                tav.statoCucina = "in_attesa";
+                tav.oraInvioCucina = oraCorrenteStr();
+            } else {
+                if (tav.statoBar !== "in_attesa") tav.tsInvioBar = Date.now();
+                tav.statoBar = "in_attesa";
+                tav.oraInvioBar = oraCorrenteStr();
+            }
+            salvaTavoloSuCloud(idTavolo);
+            controllaNuoviOrdiniInArrivo();
+            renderizzaVistaCucina();
+            renderizzaVistaBar();
+            renderizzaTavoli();
+            aggiornaBadgeRepartiHeader();
         }
 
         function segnaOrdineProntoCucina(idTavolo) {
@@ -2194,6 +2267,7 @@
             }
 
             ordinaCardPerAttesa(container);
+            renderizzaPronti("bar");
             if (conteggioInAttesa === 0) {
                 container.innerHTML = `
                     <div class="col-span-full py-16 text-center text-slate-500">
