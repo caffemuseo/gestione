@@ -1577,7 +1577,16 @@
             aggiornaBadgeRepartiHeader();
         }
 
+        function correggiCategoriaSelezionata() {
+            const sel = appData.menu[categoriaSelezionataIndex];
+            if (!sel || sel.disattivata) {
+                const i = appData.menu.findIndex(c => !c.disattivata);
+                if (i >= 0) categoriaSelezionataIndex = i;
+            }
+        }
+
         function renderizzaCategorieTab() {
+            correggiCategoriaSelezionata();
             const container = document.getElementById("container-categorie");
             container.innerHTML = "";
 
@@ -1585,7 +1594,7 @@
                 const btn = document.createElement("button");
                 btn.type = "button";
                 btn.className = `px-3.5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition border flex items-center gap-1.5 ${idx === categoriaSelezionataIndex ? "bg-amber-500 text-slate-950 border-amber-400" : "bg-slate-900 text-slate-300 border-slate-800 hover:bg-slate-800"}`;
-                if (cat.disattivata) btn.className += " opacity-40 line-through";
+                if (cat.disattivata) return;
                 const icone = `${cat.inCucina ? '<i class="fa-solid fa-utensils text-[10px]"></i>' : ""}${cat.inBar ? '<i class="fa-solid fa-mug-hot text-[10px]"></i>' : ""}`;
                 btn.innerHTML = `<span>${esc(cat.nome)}</span>${icone}`;
                 btn.onclick = () => {
@@ -1598,11 +1607,12 @@
         }
 
         function renderizzaProdottiTab() {
+            correggiCategoriaSelezionata();
             const container = document.getElementById("container-prodotti");
             container.innerHTML = "";
 
             const cat = appData.menu[categoriaSelezionataIndex];
-            if (!cat || !Array.isArray(cat.prodotti)) return;
+            if (!cat || cat.disattivata || !Array.isArray(cat.prodotti)) return;
 
             cat.prodotti.forEach((p) => {
                 const isEsaurito = Boolean(p.esaurito) || Boolean(cat.disattivata);
@@ -2642,6 +2652,8 @@
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="font-bold text-sm text-amber-400">${esc(cat.nome)}</span>
                             <button type="button" onclick="rinominaCategoria(${catIdx})" class="w-7 h-7 bg-amber-500/20 text-amber-300 rounded flex items-center justify-center" title="Rinomina categoria"><i class="fa-solid fa-pencil text-[10px]"></i></button>
+                            <button type="button" onclick="spostaCategoria(${catIdx}, -1)" class="w-7 h-7 bg-slate-800 text-slate-300 rounded flex items-center justify-center ${catIdx === 0 ? "opacity-30 pointer-events-none" : ""}" title="Sposta prima"><i class="fa-solid fa-arrow-up text-[10px]"></i></button>
+                            <button type="button" onclick="spostaCategoria(${catIdx}, 1)" class="w-7 h-7 bg-slate-800 text-slate-300 rounded flex items-center justify-center ${catIdx === appData.menu.length - 1 ? "opacity-30 pointer-events-none" : ""}" title="Sposta dopo"><i class="fa-solid fa-arrow-down text-[10px]"></i></button>
                             <label class="flex items-center gap-1.5 cursor-pointer bg-slate-800 px-2 py-1 rounded-lg border border-slate-700">
                                 <input type="checkbox" ${cat.disattivata ? "" : "checked"} onchange="toggleCategoriaAttiva(${catIdx}, this.checked)" class="accent-emerald-500">
                                 <span class="text-[11px] text-slate-300 font-medium">Attiva</span>
@@ -2709,6 +2721,17 @@
                 salvaDati();
                 renderizzaAdminCategorieMenu();
             }
+        }
+
+        function spostaCategoria(catIdx, dir) {
+            const j = catIdx + dir;
+            if (j < 0 || j >= appData.menu.length) return;
+            const sel = appData.menu[categoriaSelezionataIndex];
+            [appData.menu[catIdx], appData.menu[j]] = [appData.menu[j], appData.menu[catIdx]];
+            categoriaSelezionataIndex = Math.max(0, appData.menu.indexOf(sel));
+            salvaDati();
+            renderizzaAdminCategorieMenu();
+            renderizzaCategorieTab();
         }
 
         function rinominaCategoria(catIdx) {
