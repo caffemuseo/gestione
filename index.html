@@ -820,7 +820,7 @@
 
         function normalizzaOggettoTavolo(raw, id) {
             if (!raw || typeof raw !== "object") return creaTavoloLibero(id);
-            const ordiniArr = Array.isArray(raw.ordini) ? raw.ordini : (raw.ordini ? Object.values(raw.ordini) : []);
+            const ordiniArr = (Array.isArray(raw.ordini) ? raw.ordini : (raw.ordini ? Object.values(raw.ordini) : [])).filter(o => !o.bozza || Number(id) === Number(tavoloSelezionatoId));
             const isOccupato = ordiniArr.length > 0;
             return {
                 id: Number(id),
@@ -908,7 +908,11 @@
             localStorage.setItem("caffe_museo_pos_db", JSON.stringify(appData));
 
             if (isFirebaseInitialized && db) {
-                db.ref(`barData/tavoli/${k}`).set(appData.tavoli[k], (err) => {
+                const copiaCloud = JSON.parse(JSON.stringify(appData.tavoli[k]));
+                copiaCloud.ordini = copiaCloud.ordini.filter(o => !o.bozza);
+                const perCloud = normalizzaOggettoTavolo(copiaCloud, idTavolo);
+                perCloud.updatedAt = appData.tavoli[k].updatedAt;
+                db.ref(`barData/tavoli/${k}`).set(perCloud, (err) => {
                     if (err) {
                         ultimoErroreFirebase = err.message || "Permesso negato su Firebase";
                         aggiornaStatoCloudBadge("error");
@@ -1148,10 +1152,18 @@
                         const v = snap.val();
                         if (v === null && k === "menu") { salvaDati(); return; }
                         isApplyingRemote = true;
+                        const bozzaSel = tavoloSelezionatoId ? getTavolo(tavoloSelezionatoId).ordini.filter(o => o.bozza) : [];
+                        const notaSel = tavoloSelezionatoId ? getTavolo(tavoloSelezionatoId).notaOrdine : "";
                         if (k === "tavoli") { tavoliRaw = v; tavoliCaricati = true; }
                         if (v !== null) appData[k] = v;
                         if (tavoliRaw) appData.tavoli = tavoliRaw;
                         sanitizzaDati();
+                        if (bozzaSel.length) {
+                            const tv = getTavolo(tavoloSelezionatoId);
+                            bozzaSel.forEach(b => { if (!tv.ordini.some(o => o.uuid === b.uuid)) tv.ordini.push(b); });
+                            tv.stato = "occupato";
+                            if (notaSel && !tv.notaOrdine) tv.notaOrdine = notaSel;
+                        }
                         localStorage.setItem("caffe_museo_pos_db", JSON.stringify(appData));
                         controllaNuoviOrdiniInArrivo();
                         aggiornaInterfaccia();
@@ -1581,6 +1593,14 @@
         }
 
         function chiudiModalTavolo() {
+            if (tavoloSelezionatoId) {
+                const tav = getTavolo(tavoloSelezionatoId);
+                if (tav.ordini.some(o => o.bozza)) {
+                    if (!confirm("Ci sono articoli non inviati: chiudendo la scheda verranno eliminati. Chiudere senza inviare?")) return;
+                    tav.ordini = tav.ordini.filter(o => !o.bozza);
+                    if (tav.ordini.length === 0) appData.tavoli[keyTavolo(tavoloSelezionatoId)] = creaTavoloLibero(tavoloSelezionatoId);
+                }
+            }
             tavoloSelezionatoId = null;
             document.getElementById("modal-tavolo").classList.add("hidden");
             renderizzaTavoli();
@@ -1649,10 +1669,12 @@
                     card.innerHTML = `
                         <div class="flex items-start justify-between gap-1">
                             <span class="font-bold text-xs sm:text-sm ${qta > 0 ? "text-rose-100" : "text-slate-200"} line-clamp-2">${esc(p.nome)}</span>
-                            ${qta > 0 ? `<span class="bg-rose-500 text-white text-[11px] font-black px-1.5 py-0.5 rounded-full shrink-0">×${qta}</span>` : ""}
+                            ${qta > 0 ? `<div class="flex flex-col items-end gap-1.5 shrink-0"><span class="bg-rose-500 text-white text-[11px] font-black px-1.5 py-0.5 rounded-full">×${qta}</span><span role="button" class="btn-meno w-9 h-9 rounded-full bg-slate-950 border border-rose-500 text-rose-200 font-black text-xl flex items-center justify-center leading-none active:scale-90">−</span></div>` : ""}
                         </div>
                         <span class="font-black ${qta > 0 ? "text-rose-300" : "text-amber-400"} text-sm mt-2">€ ${Number(p.prezzo).toFixed(2)}</span>
                     `;
+                    const btnMeno = card.querySelector(".btn-meno");
+                    if (btnMeno) btnMeno.addEventListener("click", (ev) => { ev.stopPropagation(); rimuoviUnoProdotto(p); });
                 }
 
                 container.appendChild(card);
@@ -1719,7 +1741,8 @@
                 inBar: false,
                 inviatoCucina: false,
                 inviatoBar: false,
-                supplemento: true
+                supplemento: true,
+                bozza: true
             });
             salvaTavoloSuCloud(tavoloSelezionatoId);
             renderizzaListaOrdiniTavolo();
@@ -1746,6 +1769,7 @@
                 nota: "",
                 inCucina: Boolean((trovaCategoriaProdotto(prodotto) || {}).inCucina),
                 inBar: Boolean((trovaCategoriaProdotto(prodotto) || {}).inBar),
+                bozza: true,
                 inviatoCucina: false,
                 inviatoBar: false
             });
@@ -1760,6 +1784,15 @@
                     listaEl.scrollTop = listaEl.scrollHeight;
                 });
             }
+        }
+
+        function rimuoviUnoProdotto(p) {
+            if (!tavoloSelezionatoId) return;
+            const ord = getTavolo(tavoloSelezionatoId).ordini;
+            let idx = -1;
+            for (let k = ord.length - 1; k >= 0; k--) { if (ord[k].id === p.id && ord[k].bozza) { idx = k; break; } }
+            if (idx < 0) for (let k = ord.length - 1; k >= 0; k--) { if (ord[k].id === p.id) { idx = k; break; } }
+            if (idx >= 0) rimuoviDaTavolo(idx);
         }
 
         function rimuoviDaTavolo(index) {
@@ -1859,6 +1892,10 @@
             const tav = getTavolo(tavoloSelezionatoId);
             if (!tav || tav.ordini.length === 0) {
                 alert("Il tavolo non ha ordini da chiudere!");
+                return;
+            }
+            if (tav.ordini.some(o => o.bozza)) {
+                alert("Ci sono articoli non inviati: premi Invia Ordine oppure rimuovili prima di incassare.");
                 return;
             }
             document.getElementById("pag-totale").textContent = `€ ${sommaEuro(tav.ordini).toFixed(2)}`;
@@ -2005,13 +2042,16 @@
             const nuoveCucina = tav.ordini.filter(o => isProdottoCucina(o) && !o.inviatoCucina);
             const nuoveBar = tav.ordini.filter(o => isProdottoBar(o) && !o.inviatoBar);
 
-            if (nuoveCucina.length === 0 && nuoveBar.length === 0) {
+            if (nuoveCucina.length === 0 && nuoveBar.length === 0 && !tav.ordini.some(o => o.bozza)) {
                 alert("Nessuna riga nuova da inviare: è già tutto stato mandato (o le categorie non hanno un reparto attivo nel Pannello Admin).");
                 return;
             }
 
             const ora = oraCorrenteStr();
             const repartiInviati = [];
+            tav.ordini.forEach(o => { delete o.bozza; });
+            if (!tav.oraApertura) { tav.oraApertura = ora; tav.operatoreApertura = appData.operatoreCorrente; }
+            if (!tav.operatore) tav.operatore = appData.operatoreCorrente;
 
             if (nuoveCucina.length > 0) {
                 if (tav.statoCucina !== "in_attesa") tav.tsInvioCucina = Date.now();
@@ -2036,7 +2076,7 @@
             aggiornaBadgeRepartiHeader();
             chiudiModalTavolo();
 
-            mostraNotificaBanner(`ORDINE INVIATO A: ${repartiInviati.join(" + ")}`);
+            mostraNotificaBanner(`ORDINE INVIATO A: ${repartiInviati.join(" + ") || "CONTO"}`);
         }
 
         // =========================================================================
