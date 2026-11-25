@@ -2125,12 +2125,12 @@
                     const articoliCucina = raggruppaArticoli(filtrati);
                     conteggioInAttesa++;
 
-                    const listaHTML = articoliCucina.map(art => `
-                        <li class="py-2.5 border-b border-slate-800 last:border-0">
-                            <span class="font-bold text-slate-100 text-lg md:text-2xl">${art.quantita > 1 ? `${art.quantita}× ` : ""}${esc(art.nome)}</span>
+                    const listaHTML = articoliCucina.map(art => { const f = infoFatto("cucina", tav, art, filtrati); return `
+                        <li class="${f.cls}" onclick="${f.onclick}">
+                            <span class="font-bold ${f.tutte ? "text-rose-200" : "text-slate-100"} text-lg md:text-2xl">${art.quantita > 1 ? `${art.quantita}× ` : ""}${esc(art.nome)}</span>${f.chip}
                             ${art.nota ? `<p class="text-base md:text-xl text-amber-400 font-semibold mt-0.5"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(art.nota)}</p>` : ""}
                         </li>
-                    `).join("");
+                    `; }).join("");
 
                     const card = document.createElement("div");
                     card.dataset.ts = tav.tsInvioCucina || 0;
@@ -2171,6 +2171,35 @@
             }
         }
 
+        function infoFatto(reparto, tav, art, filtrati) {
+            const key = reparto === "cucina" ? "fattoCucina" : "fattoBar";
+            const righe = art.indici.map(i => filtrati[i]);
+            const fatte = righe.filter(o => o[key]).length;
+            const tutte = righe.length > 0 && fatte >= righe.length;
+            const uuids = righe.map(o => o.uuid).join(",");
+            const cls = "py-2.5 border-b last:border-0 cursor-pointer select-none rounded-lg px-2 -mx-2 transition " + (tutte ? "bg-rose-500/20 border-rose-500/40" : "border-slate-800");
+            const chip = tutte
+                ? '<span class="ml-2 bg-rose-500 text-white text-xs md:text-base font-black px-2 py-0.5 rounded-full">FATTO</span>'
+                : (fatte > 0 ? `<span class="ml-2 bg-amber-500 text-slate-950 text-xs md:text-base font-black px-2 py-0.5 rounded-full">${fatte}/${righe.length}</span>` : "");
+            return { cls, chip, tutte, onclick: `toggleFatto('${reparto}', ${tav.id}, '${uuids}')` };
+        }
+
+        function toggleFatto(reparto, idTavolo, uuids) {
+            const tav = getTavolo(idTavolo);
+            const key = reparto === "cucina" ? "fattoCucina" : "fattoBar";
+            const lista = uuids.split(",");
+            const righe = tav.ordini.filter(o => lista.includes(o.uuid));
+            if (righe.length === 0) return;
+            if (righe.every(o => o[key])) {
+                righe.forEach(o => { o[key] = false; });
+            } else {
+                righe.find(o => !o[key])[key] = true;
+            }
+            salvaTavoloSuCloud(idTavolo);
+            renderizzaVistaCucina();
+            renderizzaVistaBar();
+        }
+
         function righePronte(tav, reparto) {
             return tav.ordini.filter(o => reparto === "cucina"
                 ? (isProdottoCucina(o) && o.inviatoCucina && o.prontoCucina)
@@ -2209,7 +2238,7 @@
         function riapriOrdineReparto(idTavolo, reparto) {
             const tav = getTavolo(idTavolo);
             if (!tav) return;
-            righePronte(tav, reparto).forEach(o => { if (reparto === "cucina") o.prontoCucina = false; else o.prontoBar = false; });
+            righePronte(tav, reparto).forEach(o => { if (reparto === "cucina") { o.prontoCucina = false; o.fattoCucina = false; } else { o.prontoBar = false; o.fattoBar = false; } });
             if (reparto === "cucina") {
                 if (tav.statoCucina !== "in_attesa") tav.tsInvioCucina = Date.now();
                 tav.statoCucina = "in_attesa";
@@ -2272,12 +2301,12 @@
                     const articoliBar = raggruppaArticoli(filtrati);
                     conteggioInAttesa++;
 
-                    const listaHTML = articoliBar.map(art => `
-                        <li class="py-2.5 border-b border-slate-800 last:border-0">
-                            <span class="font-bold text-slate-100 text-lg md:text-2xl">${art.quantita > 1 ? `${art.quantita}× ` : ""}${esc(art.nome)}</span>
+                    const listaHTML = articoliBar.map(art => { const f = infoFatto("bar", tav, art, filtrati); return `
+                        <li class="${f.cls}" onclick="${f.onclick}">
+                            <span class="font-bold ${f.tutte ? "text-rose-200" : "text-slate-100"} text-lg md:text-2xl">${art.quantita > 1 ? `${art.quantita}× ` : ""}${esc(art.nome)}</span>${f.chip}
                             ${art.nota ? `<p class="text-base md:text-xl text-sky-400 font-semibold mt-0.5"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(art.nota)}</p>` : ""}
                         </li>
-                    `).join("");
+                    `; }).join("");
 
                     const card = document.createElement("div");
                     card.dataset.ts = tav.tsInvioBar || 0;
