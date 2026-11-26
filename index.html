@@ -1133,11 +1133,35 @@
             if (!isFirebaseInitialized || tavoliCaricati) primoCaricamentoCompletato = true;
         }
 
+        function inviaNotificaSistema(titolo, corpo, tag) {
+            if (!("Notification" in window) || Notification.permission !== "granted") return;
+            const opzioni = {
+                body: corpo,
+                tag: tag,
+                renotify: true,
+                requireInteraction: true,
+                vibrate: [500, 150, 500, 150, 500]
+            };
+            if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready
+                    .then(reg => reg.showNotification(titolo, opzioni))
+                    .catch(() => { try { new Notification(titolo, opzioni); } catch (e) {} });
+            } else {
+                try { new Notification(titolo, opzioni); } catch (e) {}
+            }
+        }
+
         function notificaProntoReparto(reparto, idTavolo) {
             if (["cucina", "bar"].includes(ruoloDispositivo())) return;
-            mostraNotificaBanner(`${reparto} PRONTO - ${nomeTavolo(idTavolo).toUpperCase()}!`);
+            const tavoloNome = nomeTavolo(idTavolo);
+            mostraNotificaBanner(`${reparto} PRONTO - ${tavoloNome.toUpperCase()}!`);
             emettiSuonoNotifica();
-            if ("vibrate" in navigator) navigator.vibrate([400, 150, 400]);
+            if ("vibrate" in navigator) navigator.vibrate([500, 150, 500, 150, 500]);
+            inviaNotificaSistema(
+                `${appData.nomeLocale} - ${reparto} PRONTO!`,
+                `Ordine pronto da ritirare per ${tavoloNome}`,
+                `pronto-${reparto}-${idTavolo}`
+            );
         }
 
         function ruoloDispositivo() {
@@ -1157,17 +1181,11 @@
             if ("vibrate" in navigator) {
                 navigator.vibrate([250, 120, 250]);
             }
-            if ("Notification" in window && Notification.permission === "granted") {
-                try {
-                    new Notification(`${appData.nomeLocale} - ${reparto}`, {
-                        body: `Nuovo ordine arrivato per il ${nomeTavolo(idTavolo)}`,
-                        tag: `ordine-${reparto}-${idTavolo}`,
-                        renotify: true
-                    });
-                } catch (e) {
-                    console.log("Notifica di sistema non inviata:", e);
-                }
-            }
+            inviaNotificaSistema(
+                `${appData.nomeLocale} - ${reparto}`,
+                `Nuovo ordine arrivato per ${nomeTavolo(idTavolo)}`,
+                `ordine-${reparto}-${idTavolo}`
+            );
         }
 
         function avviaConAuth() {
