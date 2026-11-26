@@ -375,12 +375,15 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
+                <button type="button" id="btn-elenco-cucina" onclick="toggleRiepilogoProdotti('cucina')" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-layer-group mr-1"></i> Mostra Elenco (0)</button>
                 <button type="button" id="btn-pronti-cucina" onclick="togglePannelloPronti('cucina')" class="bg-emerald-600/20 text-emerald-300 border border-emerald-600/40 px-3 py-2 rounded-xl text-xs font-bold transition">Pronti (0)</button>
                 <button type="button" onclick="chiudiVistaCucina()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">
                 <i class="fa-solid fa-xmark mr-1"></i> Chiudi
             </button>
             </div>
         </div>
+
+        <div id="riepilogo-prodotti-cucina" class="hidden flex-1 overflow-y-auto p-4 pb-28"></div>
 
         <div id="pannello-pronti-cucina" class="hidden bg-slate-900/60 border-b border-slate-800 p-3 space-y-2 max-h-[45vh] overflow-y-auto shrink-0"></div>
 
@@ -400,6 +403,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
+                <button type="button" id="btn-elenco-bar" onclick="toggleRiepilogoProdotti('bar')" class="bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-layer-group mr-1"></i> Mostra Elenco (0)</button>
                 <button type="button" id="btn-pronti-bar" onclick="togglePannelloPronti('bar')" class="bg-emerald-600/20 text-emerald-300 border border-emerald-600/40 px-3 py-2 rounded-xl text-xs font-bold transition">Pronti (0)</button>
                 <button type="button" onclick="chiudiVistaBar()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">
                 <i class="fa-solid fa-xmark mr-1"></i> Chiudi
@@ -407,27 +411,29 @@
             </div>
         </div>
 
+        <div id="riepilogo-prodotti-bar" class="hidden flex-1 overflow-y-auto p-4 pb-28"></div>
+
         <div id="pannello-pronti-bar" class="hidden bg-slate-900/60 border-b border-slate-800 p-3 space-y-2 max-h-[45vh] overflow-y-auto shrink-0"></div>
 
         <div id="container-ordini-bar" class="flex-1 overflow-y-auto p-4 pb-28 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
     </div>
 
     <!-- ========================================== -->
-    <!-- MODALE STORICO TAVOLI CHIUSI               -->
+    <!-- MODALE STORICO TAVOLI & REPORT PRODOTTI    -->
     <!-- ========================================== -->
     <div id="modal-storico" class="hidden fixed inset-0 z-[60] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
-        <div class="w-full max-w-3xl bg-slate-900 border border-slate-800 rounded-3xl flex flex-col h-[88dvh] shadow-2xl overflow-hidden">
-            <div class="px-5 py-4 bg-slate-800 border-b border-slate-700 flex items-center justify-between shrink-0">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-clock-rotate-left text-emerald-400 text-xl"></i>
-                    <div>
-                        <h2 class="font-bold text-base text-slate-100">Storico Tavoli Chiusi</h2>
-                        <span id="storico-totale-incassato" class="text-xs text-emerald-400 font-semibold">Totale: € 0.00</span>
+        <div class="w-full max-w-3xl bg-slate-900 border border-slate-800 rounded-3xl flex flex-col h-[90dvh] shadow-2xl overflow-hidden">
+            <div class="px-4 sm:px-5 py-3.5 bg-slate-800 border-b border-slate-700 flex items-center justify-between gap-2 shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <i class="fa-solid fa-clock-rotate-left text-emerald-400 text-xl shrink-0"></i>
+                    <div class="min-w-0">
+                        <h2 class="font-bold text-base text-slate-100 leading-tight">Storico & Report Serale</h2>
+                        <span id="storico-totale-incassato" class="text-[11px] sm:text-xs text-emerald-400 font-semibold block truncate">Totale: € 0.00</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="esportaStoricoCSV()" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold transition">CSV</button>
-                    <button type="button" onclick="svuotaStorico()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 px-3 py-1.5 rounded-xl text-xs font-bold transition">
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <button type="button" onclick="esportaStoricoCSV()" class="bg-slate-900 hover:bg-slate-700 text-emerald-400 border border-slate-700 px-2.5 py-1.5 rounded-xl text-xs font-bold transition" title="Esporta CSV">CSV</button>
+                    <button type="button" onclick="svuotaStorico()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 px-2.5 py-1.5 rounded-xl text-xs font-bold transition">
                         Svuota
                     </button>
                     <button type="button" onclick="chiudiStoricoModal()" class="w-8 h-8 bg-slate-700/50 hover:bg-slate-700 text-slate-300 rounded-full flex items-center justify-center transition">
@@ -435,7 +441,19 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Schede Storico Tavoli vs Report Giornaliero Prodotti -->
+            <div class="grid grid-cols-2 gap-2 p-2.5 bg-slate-950 border-b border-slate-800 shrink-0">
+                <button type="button" id="tab-storico-tavoli" onclick="impostaSchedaStorico('tavoli')" class="py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition bg-amber-500 text-slate-950 shadow">
+                    <i class="fa-solid fa-receipt"></i> Tavoli Chiusi
+                </button>
+                <button type="button" id="tab-storico-report" onclick="impostaSchedaStorico('report')" class="py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition bg-slate-800 text-slate-200 border border-slate-700">
+                    <i class="fa-solid fa-chart-column text-emerald-400"></i> Report Prodotti
+                </button>
+            </div>
+
             <div id="lista-storico-tavoli" class="flex-1 overflow-y-auto p-4 pb-24 space-y-2.5"></div>
+            <div id="pannello-report-giornaliero" class="hidden flex-1 overflow-y-auto p-4 pb-24 space-y-4"></div>
         </div>
     </div>
 
@@ -753,7 +771,8 @@
             totalTavoli: 8,
             menu: JSON.parse(JSON.stringify(defaultMenu)),
             tavoli: {},
-            storico: []
+            storico: [],
+            reportGiornalieri: {}
         };
 
         let appData = JSON.parse(JSON.stringify(defaultData));
@@ -959,6 +978,10 @@
 
             appData.storico.sort((a, b) => (b.id || 0) - (a.id || 0));
 
+            if (!appData.reportGiornalieri || typeof appData.reportGiornalieri !== "object") {
+                appData.reportGiornalieri = {};
+            }
+
             const rawTavoli = appData.tavoli || {};
             const nuoviTavoli = {};
             for (const i of idsTavoli()) {
@@ -1018,6 +1041,7 @@
                     delete payload.operatoreCorrente;
                     delete payload.tavoli;
                     delete payload.storico;
+                    delete payload.reportGiornalieri;
                     db.ref("barData").update(payload, gestisciEsitoScrittura);
                 }
             }
@@ -1244,7 +1268,7 @@
                     }
                 });
 
-                ["nomeLocale", "logoBase64", "pinCorretto", "adminPassword", "operatori", "pinOperatori", "notePredefinite", "totalTavoli", "menu", "tavoli"].forEach(k => {
+                ["nomeLocale", "logoBase64", "pinCorretto", "adminPassword", "operatori", "pinOperatori", "notePredefinite", "totalTavoli", "menu", "tavoli", "reportGiornalieri"].forEach(k => {
                     db.ref("barData/" + k).on("value", (snap) => {
                         const v = snap.val();
                         if (v === null && k === "menu") { salvaDati(); return; }
@@ -2101,7 +2125,7 @@
                 };
 
                 appData.storico.unshift(recordStorico);
-                
+                aggiornaReportGiornalieroAutomatico(chiaveDataLocale(recordStorico.id));
 
                 appData.tavoli[keyTavolo(idTavolo)] = creaTavoloLibero(idTavolo);
 
@@ -2332,6 +2356,7 @@
             }
 
             ordinaCardPerAttesa(container);
+            renderizzaRiepilogoProdotti("cucina");
             renderizzaPronti("cucina");
             if (conteggioInAttesa === 0) {
                 container.innerHTML = `
@@ -2341,6 +2366,211 @@
                     </div>
                 `;
             }
+        }
+
+
+        function chiaveProdottoRiepilogo(item) {
+            const notaPulita = (item.nota || "").trim();
+            return `${item.id || item.nome}__${notaPulita}`;
+        }
+
+        function raccogliRiepilogoReparto(reparto) {
+            const isCucina = reparto === "cucina";
+            const keyFatto = isCucina ? "fattoCucina" : "fattoBar";
+            const mappa = new Map();
+
+            for (const i of idsTavoli()) {
+                const tav = getTavolo(i);
+                if (!tav || (isCucina ? tav.statoCucina : tav.statoBar) !== "in_attesa" || !Array.isArray(tav.ordini)) continue;
+
+                tav.ordini.forEach((o) => {
+                    const matchReparto = isCucina
+                        ? (isProdottoCucina(o) && o.inviatoCucina && !o.prontoCucina)
+                        : (isProdottoBar(o) && o.inviatoBar && !o.prontoBar);
+                    if (!matchReparto) return;
+
+                    const chiave = chiaveProdottoRiepilogo(o);
+                    if (!mappa.has(chiave)) {
+                        mappa.set(chiave, {
+                            chiave,
+                            nome: o.nome,
+                            nota: (o.nota || "").trim(),
+                            totale: 0,
+                            fatte: 0,
+                            riferimenti: []
+                        });
+                    }
+                    const entry = mappa.get(chiave);
+                    entry.totale += 1;
+                    if (o[keyFatto]) entry.fatte += 1;
+                    entry.riferimenti.push({ idTavolo: tav.id, uuid: o.uuid });
+                });
+            }
+
+            return Array.from(mappa.values());
+        }
+
+        function toggleRiepilogoProdotti(reparto) {
+            const box = document.getElementById("riepilogo-prodotti-" + reparto);
+            const gridOrdini = document.getElementById("container-ordini-" + reparto);
+            const pannelloPronti = document.getElementById("pannello-pronti-" + reparto);
+            if (!box || !gridOrdini) return;
+
+            const apreElencoUnico = box.classList.contains("hidden");
+            if (apreElencoUnico) {
+                if (pannelloPronti) pannelloPronti.classList.add("hidden");
+                box.classList.remove("hidden");
+                gridOrdini.classList.add("hidden");
+            } else {
+                box.classList.add("hidden");
+                gridOrdini.classList.remove("hidden");
+            }
+            renderizzaRiepilogoProdotti(reparto);
+        }
+
+        function renderizzaRiepilogoProdotti(reparto) {
+            const box = document.getElementById("riepilogo-prodotti-" + reparto);
+            const gridOrdini = document.getElementById("container-ordini-" + reparto);
+            const btn = document.getElementById("btn-elenco-" + reparto);
+            const isCucina = reparto === "cucina";
+            const items = raccogliRiepilogoReparto(reparto);
+            const totaleResidui = items.reduce((acc, it) => acc + Math.max(0, it.totale - it.fatte), 0);
+            const aperto = box && !box.classList.contains("hidden");
+
+            if (gridOrdini) {
+                if (aperto) gridOrdini.classList.add("hidden");
+                else gridOrdini.classList.remove("hidden");
+            }
+
+            if (btn) {
+                const label = aperto ? "Mostra Tavoli" : "Mostra Elenco";
+                const icona = aperto ? "fa-table-cells-large" : "fa-layer-group";
+                btn.innerHTML = `<i class="fa-solid ${icona} mr-1"></i> ${label} (${totaleResidui})`;
+            }
+
+            if (!box) return;
+
+            if (items.length === 0) {
+                box.innerHTML = `<div class="max-w-2xl mx-auto py-16 text-center text-slate-500">
+                    <i class="fa-solid ${isCucina ? "fa-utensils" : "fa-mug-hot"} text-4xl mb-3 block"></i>
+                    <p class="text-sm font-semibold">Nessun prodotto in attesa ${isCucina ? "in cucina" : "al bar"}</p>
+                </div>`;
+                return;
+            }
+
+            const borderCol = isCucina ? "border-amber-500/50" : "border-sky-500/50";
+            const titleCol = isCucina ? "text-amber-400" : "text-sky-400";
+            const numBgCol = isCucina ? "bg-amber-400 text-slate-950" : "bg-sky-400 text-slate-950";
+
+            const righeHTML = items.map((it, idx) => {
+                const residui = Math.max(0, it.totale - it.fatte);
+                const completato = residui === 0;
+                const rowCls = completato
+                    ? "py-3 px-3 rounded-xl bg-rose-600/85 border-2 border-rose-300 shadow-lg shadow-rose-950/70 cursor-pointer select-none transition"
+                    : (it.fatte > 0
+                        ? "py-3 px-3 rounded-xl bg-amber-500/20 border border-amber-400/60 cursor-pointer select-none transition active:scale-[0.99]"
+                        : "py-3 px-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-600 cursor-pointer select-none transition active:scale-[0.99]");
+
+                const chip = completato
+                    ? '<span class="ml-2 bg-white text-rose-700 text-xs md:text-base font-black px-2.5 py-0.5 rounded-full shadow">✓ FATTO</span>'
+                    : (it.fatte > 0
+                        ? `<span class="ml-2 bg-amber-400 text-slate-950 text-xs md:text-base font-black px-2.5 py-0.5 rounded-full">${it.fatte}/${it.totale}</span>`
+                        : "");
+
+                return `<li class="${rowCls}" onclick="completaProdottoRiepilogo('${reparto}', '${encodeURIComponent(it.chiave)}')">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-start gap-3 min-w-0">
+                            <span class="w-8 h-8 md:w-9 md:h-9 rounded-lg ${numBgCol} font-black text-base md:text-lg flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span>
+                            <div class="min-w-0">
+                                <div class="font-black text-xl md:text-3xl ${completato ? "text-white" : "text-slate-100"} leading-tight">
+                                    <span class="${completato ? "text-rose-100" : titleCol}">${residui}×</span> ${esc(it.nome)}${chip}
+                                </div>
+                                ${it.nota ? `<p class="text-base md:text-xl ${completato ? "text-rose-100" : titleCol} font-semibold mt-0.5"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(it.nota)}</p>` : ""}
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold uppercase px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 shrink-0">
+                            ${completato ? "Completato" : "Tocca per fare"}
+                        </span>
+                    </div>
+                </li>`;
+            }).join("");
+
+            box.innerHTML = `
+                <div class="max-w-3xl mx-auto bg-slate-900 border-2 ${borderCol} rounded-2xl p-4 sm:p-5 shadow-2xl">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4 gap-2">
+                        <div>
+                            <span class="text-2xl md:text-3xl font-black ${titleCol} uppercase">ORDINE UNICO ${isCucina ? "CUCINA" : "BAR"}</span>
+                            <p class="text-xs md:text-sm text-slate-400 mt-0.5">Tutti i prodotti sommati dai tavoli • Tocca ogni riga per segnare fatta</p>
+                        </div>
+                        <span class="text-xs font-black px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 shrink-0">
+                            Totale: ${totaleResidui} pz
+                        </span>
+                    </div>
+                    <ul class="space-y-2">${righeHTML}</ul>
+                </div>
+            `;
+        }
+
+        function completaProdottoRiepilogo(reparto, chiaveEncoded) {
+            const chiave = decodeURIComponent(chiaveEncoded);
+            const isCucina = reparto === "cucina";
+            const keyFatto = isCucina ? "fattoCucina" : "fattoBar";
+            const tavoliToccati = new Set();
+            let modificato = false;
+
+            for (const i of idsTavoli()) {
+                const tav = getTavolo(i);
+                if (!tav || (isCucina ? tav.statoCucina : tav.statoBar) !== "in_attesa" || !Array.isArray(tav.ordini)) continue;
+
+                tav.ordini.forEach((o) => {
+                    const matchReparto = isCucina
+                        ? (isProdottoCucina(o) && o.inviatoCucina && !o.prontoCucina)
+                        : (isProdottoBar(o) && o.inviatoBar && !o.prontoBar);
+                    if (matchReparto && chiaveProdottoRiepilogo(o) === chiave && !o[keyFatto]) {
+                        o[keyFatto] = true;
+                        modificato = true;
+                        tavoliToccati.add(i);
+                    }
+                });
+            }
+
+            if (!modificato) return;
+
+            tavoliToccati.forEach((idTav) => {
+                const tav = getTavolo(idTav);
+                const residui = tav.ordini.filter((o) => isCucina
+                    ? (isProdottoCucina(o) && o.inviatoCucina && !o.prontoCucina && !o.fattoCucina)
+                    : (isProdottoBar(o) && o.inviatoBar && !o.prontoBar && !o.fattoBar)
+                );
+
+                // Se tutte le righe del reparto su quel tavolo sono segnate come FATTO, le marca come pronte così spariscono automaticamente dai vari ordini
+                if (residui.length === 0) {
+                    if (isCucina) {
+                        tav.ordini.forEach((o) => {
+                            if (isProdottoCucina(o) && o.inviatoCucina && !o.prontoCucina && o.fattoCucina) {
+                                o.prontoCucina = true;
+                            }
+                        });
+                        tav.statoCucina = "pronto";
+                        tav.oraProntoCucina = oraCorrenteStr();
+                    } else {
+                        tav.ordini.forEach((o) => {
+                            if (isProdottoBar(o) && o.inviatoBar && !o.prontoBar && o.fattoBar) {
+                                o.prontoBar = true;
+                            }
+                        });
+                        tav.statoBar = "pronto";
+                        tav.oraProntoBar = oraCorrenteStr();
+                    }
+                }
+                salvaTavoloSuCloud(idTav);
+            });
+
+            controllaNuoviOrdiniInArrivo();
+            renderizzaVistaCucina();
+            renderizzaVistaBar();
+            renderizzaTavoli();
+            aggiornaBadgeRepartiHeader();
         }
 
         function infoFatto(reparto, tav, art, filtrati) {
@@ -2379,7 +2609,13 @@
         }
 
         function togglePannelloPronti(reparto) {
-            document.getElementById("pannello-pronti-" + reparto).classList.toggle("hidden");
+            const pannello = document.getElementById("pannello-pronti-" + reparto);
+            const boxElenco = document.getElementById("riepilogo-prodotti-" + reparto);
+            if (pannello.classList.contains("hidden") && boxElenco && !boxElenco.classList.contains("hidden")) {
+                boxElenco.classList.add("hidden");
+                renderizzaRiepilogoProdotti(reparto);
+            }
+            pannello.classList.toggle("hidden");
         }
 
         function renderizzaPronti(reparto) {
@@ -2515,6 +2751,7 @@
             }
 
             ordinaCardPerAttesa(container);
+            renderizzaRiepilogoProdotti("bar");
             renderizzaPronti("bar");
             if (conteggioInAttesa === 0) {
                 container.innerHTML = `
@@ -2626,17 +2863,147 @@
             document.getElementById("modal-dettaglio-ordine").classList.add("hidden");
         }
 
-        function apriStoricoModal() {
+        let schedaStoricoAttiva = "tavoli";
+        let dataReportSelezionata = "";
+
+        function chiaveDataLocale(tsOrDate = Date.now()) {
+            const d = tsOrDate instanceof Date ? tsOrDate : new Date(Number(tsOrDate) || Date.now());
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, "0");
+            const g = String(d.getDate()).padStart(2, "0");
+            return `${y}-${m}-${g}`;
+        }
+
+        function formattaDataItaliana(chiaveData) {
+            if (!chiaveData || !/^\d{4}-\d{2}-\d{2}$/.test(chiaveData)) return chiaveData || "";
+            const [y, m, g] = chiaveData.split("-");
+            return `${g}/${m}/${y}`;
+        }
+
+        function costruisciReportPerData(chiaveData) {
+            const records = appData.storico.filter(s => chiaveDataLocale(s.id) === chiaveData);
+            const mappaProdotti = new Map();
+            let totContantiCents = 0;
+            let totCartaCents = 0;
+            let totGeneraleCents = 0;
+            let totPezzi = 0;
+
+            records.forEach(rec => {
+                const impCents = Math.round((Number(rec.totale) || 0) * 100);
+                totGeneraleCents += impCents;
+                if (rec.metodo === "Contanti") totContantiCents += impCents;
+                else if (rec.metodo === "Carta") totCartaCents += impCents;
+
+                (rec.ordini || []).forEach(item => {
+                    const nome = (item.nome || "Prodotto").trim();
+                    const key = nome.toLowerCase();
+                    const prezzoCents = Math.round((Number(item.prezzo) || 0) * 100);
+                    const rep = isProdottoCucina(item) && isProdottoBar(item)
+                        ? "Cucina/Bar"
+                        : (isProdottoCucina(item) ? "Cucina" : (isProdottoBar(item) ? "Bar" : "Altro"));
+
+                    if (!mappaProdotti.has(key)) {
+                        mappaProdotti.set(key, {
+                            nome,
+                            reparto: rep,
+                            quantita: 0,
+                            incassoCents: 0
+                        });
+                    }
+                    const entry = mappaProdotti.get(key);
+                    entry.quantita += 1;
+                    entry.incassoCents += prezzoCents;
+                    totPezzi += 1;
+                });
+            });
+
+            const prodotti = Array.from(mappaProdotti.values())
+                .sort((a, b) => b.quantita - a.quantita || a.nome.localeCompare(b.nome, "it"))
+                .map(p => ({
+                    nome: p.nome,
+                    reparto: p.reparto,
+                    quantita: p.quantita,
+                    incasso: Math.round(p.incassoCents) / 100
+                }));
+
+            return {
+                data: chiaveData,
+                numeroConti: records.length,
+                totalePezzi: totPezzi,
+                totaleIncasso: totGeneraleCents / 100,
+                totaleContanti: totContantiCents / 100,
+                totaleCarta: totCartaCents / 100,
+                prodotti,
+                aggiornatoAt: Date.now()
+            };
+        }
+
+        function aggiornaReportGiornalieroAutomatico(chiaveData = chiaveDataLocale()) {
+            if (!appData.reportGiornalieri || typeof appData.reportGiornalieri !== "object") {
+                appData.reportGiornalieri = {};
+            }
+            const rep = costruisciReportPerData(chiaveData);
+            if (rep.numeroConti === 0) {
+                delete appData.reportGiornalieri[chiaveData];
+                localStorage.setItem("caffe_museo_pos_db", JSON.stringify(appData));
+                if (isFirebaseInitialized && db) {
+                    db.ref("barData/reportGiornalieri/" + chiaveData).remove();
+                }
+            } else {
+                appData.reportGiornalieri[chiaveData] = rep;
+                localStorage.setItem("caffe_museo_pos_db", JSON.stringify(appData));
+                if (isFirebaseInitialized && db) {
+                    db.ref("barData/reportGiornalieri/" + chiaveData).set(rep);
+                }
+            }
+            return rep;
+        }
+
+        function sincronizzaTuttiReportGiornalieri() {
+            const dateTrovate = new Set([chiaveDataLocale()]);
+            appData.storico.forEach(s => dateTrovate.add(chiaveDataLocale(s.id)));
+            Object.keys(appData.reportGiornalieri || {}).forEach(d => dateTrovate.add(d));
+            dateTrovate.forEach(d => aggiornaReportGiornalieroAutomatico(d));
+        }
+
+        function impostaSchedaStorico(scheda) {
+            schedaStoricoAttiva = scheda;
+            const listaTavoli = document.getElementById("lista-storico-tavoli");
+            const pannelloReport = document.getElementById("pannello-report-giornaliero");
+            const tabTavoli = document.getElementById("tab-storico-tavoli");
+            const tabReport = document.getElementById("tab-storico-report");
+
+            if (!listaTavoli || !pannelloReport || !tabTavoli || !tabReport) return;
+
+            if (scheda === "report") {
+                listaTavoli.classList.add("hidden");
+                pannelloReport.classList.remove("hidden");
+                tabReport.className = "py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition bg-emerald-500 text-slate-950 shadow";
+                tabTavoli.className = "py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition bg-slate-800 text-slate-200 border border-slate-700";
+                renderizzaReportGiornaliero();
+            } else {
+                pannelloReport.classList.add("hidden");
+                listaTavoli.classList.remove("hidden");
+                tabTavoli.className = "py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition bg-amber-500 text-slate-950 shadow";
+                tabReport.className = "py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition bg-slate-800 text-slate-200 border border-slate-700";
+                renderizzaStorico();
+            }
+        }
+
+        function apriStoricoModal(schedaIniziale = "tavoli") {
             document.getElementById("modal-storico").classList.remove("hidden");
+            if (!dataReportSelezionata) dataReportSelezionata = chiaveDataLocale();
             if (isFirebaseInitialized && db) {
                 db.ref("barData/storico").once("value", (s) => {
                     const v = s.val();
-                    if (v) appData.storico = Object.values(v);
+                    appData.storico = v ? Object.values(v) : [];
                     sanitizzaDati();
-                    renderizzaStorico();
+                    sincronizzaTuttiReportGiornalieri();
+                    impostaSchedaStorico(schedaIniziale);
                 });
             } else {
-                renderizzaStorico();
+                sincronizzaTuttiReportGiornalieri();
+                impostaSchedaStorico(schedaIniziale);
             }
         }
 
@@ -2659,7 +3026,7 @@
             container.innerHTML = "";
 
             const totaleIncassato = appData.storico.reduce((acc, s) => acc + Math.round((Number(s.totale) || 0) * 100), 0) / 100;
-            document.getElementById("storico-totale-incassato").textContent = `Oggi (${contiOggi().length} conti): € ${totaleMetodo()} • Contanti € ${totaleMetodo("Contanti")} • Carta € ${totaleMetodo("Carta")} • Storico totale € ${totaleIncassato.toFixed(2)}`;
+            document.getElementById("storico-totale-incassato").textContent = `Oggi (${contiOggi().length} conti): € ${totaleMetodo()} • Contanti € ${totaleMetodo("Contanti")} • Carta € ${totaleMetodo("Carta")} • Totale € ${totaleIncassato.toFixed(2)}`;
 
             if (appData.storico.length === 0) {
                 container.innerHTML = `<p class="text-center text-slate-500 text-sm py-12">Nessun tavolo chiuso nello storico.</p>`;
@@ -2668,23 +3035,192 @@
 
             appData.storico.forEach((rec, idx) => {
                 const card = document.createElement("div");
-                card.className = "bg-slate-950 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-3";
+                card.className = "bg-slate-950 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2.5";
                 card.innerHTML = `
-                    <div class="min-w-0">
-                        <div class="flex items-center gap-2">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2 flex-wrap">
                             <span class="font-bold text-sm text-amber-400">${nomeTavolo(rec.tavolo)}</span>
                             <span class="text-xs font-black text-emerald-400">€ ${Number(rec.totale).toFixed(2)}</span>
+                            ${rec.metodo ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">${esc(rec.metodo)}</span>` : ""}
                         </div>
                         <div class="text-[11px] text-slate-400 mt-0.5 truncate">
                             Chiuso: ${rec.oraChiusura} • Op: ${esc(rec.operatoreChiusura)} • ${(rec.ordini || []).length} art.
                         </div>
                     </div>
-                    <button type="button" onclick="apriDettaglioStorico(${idx})" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl text-xs font-bold shrink-0 transition">
-                        Dettaglio
-                    </button>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button type="button" onclick="apriDettaglioStorico(${idx})" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition">
+                            Dettaglio
+                        </button>
+                        <button type="button" onclick="eliminaRecordStorico(${idx})" class="w-9 h-9 bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 rounded-xl flex items-center justify-center transition active:scale-95" title="Elimina questo tavolo dallo storico">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    </div>
                 `;
                 container.appendChild(card);
             });
+        }
+
+        function eliminaRecordStorico(idx) {
+            const rec = appData.storico[idx];
+            if (!rec) return;
+            const msg = `Eliminare dallo storico ${nomeTavolo(rec.tavolo)} (€ ${Number(rec.totale).toFixed(2)} - ${rec.oraChiusura})?
+Verrà aggiornato automaticamente anche il report giornaliero.`;
+            if (!confirm(msg)) return;
+
+            const chiaveData = chiaveDataLocale(rec.id);
+            appData.storico.splice(idx, 1);
+            if (isFirebaseInitialized && db && rec.id) {
+                db.ref("barData/storico/" + rec.id).remove();
+            }
+            aggiornaReportGiornalieroAutomatico(chiaveData);
+            localStorage.setItem("caffe_museo_pos_db", JSON.stringify(appData));
+            renderizzaStorico();
+            if (schedaStoricoAttiva === "report") renderizzaReportGiornaliero();
+            mostraNotificaBanner("TAVOLO RIMOSSO DALLO STORICO!");
+        }
+
+        function cambiaDataReport(nuovaData) {
+            dataReportSelezionata = nuovaData || chiaveDataLocale();
+            renderizzaReportGiornaliero();
+        }
+
+        function renderizzaReportGiornaliero() {
+            const container = document.getElementById("pannello-report-giornaliero");
+            if (!container) return;
+
+            const oggi = chiaveDataLocale();
+            if (!dataReportSelezionata) dataReportSelezionata = oggi;
+
+            const rep = aggiornaReportGiornalieroAutomatico(dataReportSelezionata);
+            const dateDisponibili = Array.from(new Set([
+                oggi,
+                ...Object.keys(appData.reportGiornalieri || {}),
+                ...appData.storico.map(s => chiaveDataLocale(s.id))
+            ])).sort().reverse();
+
+            const opzioniDateHTML = dateDisponibili.map(d => {
+                const label = d === oggi ? `Oggi (${formattaDataItaliana(d)})` : formattaDataItaliana(d);
+                return `<option value="${d}" ${d === dataReportSelezionata ? "selected" : ""}>${label}</option>`;
+            }).join("");
+
+            const righeProdottiHTML = rep.prodotti.length > 0
+                ? rep.prodotti.map((p, i) => `
+                    <div class="flex items-center justify-between gap-3 py-2.5 px-3 rounded-xl bg-slate-900/90 border border-slate-800">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="min-w-[3rem] px-2 py-1 rounded-lg bg-emerald-500 text-slate-950 font-black text-sm text-center shrink-0">${p.quantita}×</span>
+                            <div class="min-w-0">
+                                <div class="font-bold text-sm sm:text-base text-slate-100 truncate">${esc(p.nome)}</div>
+                                <div class="text-[11px] text-slate-400">${esc(p.reparto)}</div>
+                            </div>
+                        </div>
+                        <span class="font-black text-sm text-amber-400 shrink-0">€ ${Number(p.incasso).toFixed(2)}</span>
+                    </div>
+                `).join("")
+                : `<div class="py-10 text-center text-slate-500 text-xs">
+                    <i class="fa-solid fa-box-open text-3xl mb-2 block opacity-60"></i>
+                    Nessun prodotto venduto nella giornata selezionata.
+                </div>`;
+
+            container.innerHTML = `
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <div class="text-xs font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Report Serale Automatico
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Si aggiorna automaticamente ad ogni conto chiuso</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select onchange="cambiaDataReport(this.value)" class="bg-slate-900 border border-slate-700 text-slate-100 text-xs font-bold px-3 py-2 rounded-xl focus:outline-none focus:border-emerald-500">
+                                ${opzioniDateHTML}
+                            </select>
+                            <button type="button" onclick="stampaReportGiornaliero('${dataReportSelezionata}')" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition active:scale-95" title="Stampa riepilogo serale">
+                                <i class="fa-solid fa-print"></i> Stampa
+                            </button>
+                            <button type="button" onclick="esportaReportGiornalieroCSV('${dataReportSelezionata}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition active:scale-95">
+                                CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
+                            <div class="text-[10px] uppercase text-slate-400 font-bold">Totale Pezzi</div>
+                            <div class="text-lg font-black text-emerald-400">${rep.totalePezzi} pz</div>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
+                            <div class="text-[10px] uppercase text-slate-400 font-bold">Incasso Giorno</div>
+                            <div class="text-lg font-black text-amber-400">€ ${rep.totaleIncasso.toFixed(2)}</div>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
+                            <div class="text-[10px] uppercase text-slate-400 font-bold">Contanti</div>
+                            <div class="text-sm font-black text-slate-200 mt-0.5">€ ${rep.totaleContanti.toFixed(2)}</div>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
+                            <div class="text-[10px] uppercase text-slate-400 font-bold">Carta (${rep.numeroConti} conti)</div>
+                            <div class="text-sm font-black text-slate-200 mt-0.5">€ ${rep.totaleCarta.toFixed(2)}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <span class="text-xs font-black uppercase tracking-wider text-slate-300">Riepilogo Prodotti Venduti (${formattaDataItaliana(dataReportSelezionata)})</span>
+                        <span class="text-[11px] text-slate-400 font-semibold">${rep.prodotti.length} voci</span>
+                    </div>
+                    <div class="space-y-2">${righeProdottiHTML}</div>
+                </div>
+            `;
+        }
+
+        function stampaReportGiornaliero(chiaveData) {
+            const rep = aggiornaReportGiornalieroAutomatico(chiaveData);
+            if (rep.prodotti.length === 0) {
+                alert("Nessun prodotto da stampare per questa giornata.");
+                return;
+            }
+            const areaStampa = document.getElementById("area-stampa-ticket");
+            const righeHTML = rep.prodotti.map(p => `
+                <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
+                    <span>${p.quantita}x ${esc(p.nome)}</span>
+                    <span>€ ${Number(p.incasso).toFixed(2)}</span>
+                </div>
+            `).join("");
+
+            areaStampa.innerHTML = `
+                <div style="text-align:center; font-weight:bold; font-size:16px;">${esc((appData.nomeLocale || "CAFFÈ MUSEO").toUpperCase())}</div>
+                <div style="text-align:center; font-weight:bold; font-size:13px; margin:4px 0;">REPORT PRODOTTI GIORNALIERO</div>
+                <div style="text-align:center; font-size:12px;">Data: ${formattaDataItaliana(chiaveData)}</div>
+                <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
+                ${righeHTML}
+                <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
+                <div style="display:flex; justify-content:space-between; font-weight:bold;">
+                    <span>TOTALE PEZZI:</span>
+                    <span>${rep.totalePezzi}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; margin-top:3px;">
+                    <span>Contanti: € ${rep.totaleContanti.toFixed(2)}</span>
+                    <span>Carta: € ${rep.totaleCarta.toFixed(2)}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:15px; margin-top:4px;">
+                    <span>INCASSO TOTALE:</span>
+                    <span>€ ${rep.totaleIncasso.toFixed(2)}</span>
+                </div>
+            `;
+            window.print();
+        }
+
+        function esportaReportGiornalieroCSV(chiaveData) {
+            const rep = aggiornaReportGiornalieroAutomatico(chiaveData);
+            const righe = ["Data;Prodotto;Reparto;Quantita;Incasso"];
+            rep.prodotti.forEach(p => {
+                righe.push([formattaDataItaliana(chiaveData), p.nome, p.reparto, p.quantita, Number(p.incasso).toFixed(2).replace(".", ",")].join(";"));
+            });
+            righe.push(["", "TOTALE", "", rep.totalePezzi, rep.totaleIncasso.toFixed(2).replace(".", ",")].join(";"));
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(new Blob(["\ufeff" + righe.join("\\n")], { type: "text/csv;charset=utf-8" }));
+            a.download = `report_prodotti_${chiaveData}.csv`;
+            a.click();
         }
 
         function apriDettaglioStorico(idx) {
@@ -2697,18 +3233,23 @@
             const righe = ["Chiusura;Tavolo;Operatore;Articoli;Totale;Pagamento"];
             appData.storico.forEach(s => righe.push([s.oraChiusura, nomeTavolo(s.tavolo), s.operatoreChiusura, (s.ordini || []).length, Number(s.totale).toFixed(2).replace(".", ","), s.metodo || ""].join(";")));
             const a = document.createElement("a");
-            a.href = URL.createObjectURL(new Blob(["\ufeff" + righe.join("\n")], { type: "text/csv;charset=utf-8" }));
+            a.href = URL.createObjectURL(new Blob(["\ufeff" + righe.join("\\n")], { type: "text/csv;charset=utf-8" }));
             a.download = "storico_caffe_museo_" + new Date().toISOString().slice(0, 10) + ".csv";
             a.click();
         }
 
         function svuotaStorico() {
             if (prompt("Password amministratore per svuotare lo storico:") !== appData.adminPassword) { alert("Password errata."); return; }
-            if (confirm("Vuoi cancellare tutto lo storico dei tavoli chiusi?")) {
+            if (confirm("Vuoi cancellare tutto lo storico dei tavoli chiusi e i report giornalieri?")) {
                 appData.storico = [];
-                if (isFirebaseInitialized && db) db.ref("barData/storico").remove();
+                appData.reportGiornalieri = {};
+                if (isFirebaseInitialized && db) {
+                    db.ref("barData/storico").remove();
+                    db.ref("barData/reportGiornalieri").remove();
+                }
                 salvaDati();
                 renderizzaStorico();
+                if (schedaStoricoAttiva === "report") renderizzaReportGiornaliero();
             }
         }
 
