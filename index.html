@@ -303,7 +303,7 @@
 
                         <div class="grid grid-cols-2 gap-2">
                             <button type="button" onclick="apriModalNotaOrdine()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold py-2 rounded-xl text-xs border border-slate-700 transition active:scale-95"><i class="fa-solid fa-note-sticky"></i> Nota ordine</button>
-                            <button type="button" onclick="apriModalSupplemento()" class="bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold py-2 rounded-xl text-xs border border-slate-700 transition active:scale-95"><i class="fa-solid fa-pen-to-square"></i> Fuori Menu</button>
+                            <button type="button" onclick="apriModalSupplemento()" class="bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold py-2 rounded-xl text-xs border border-slate-700 transition active:scale-95"><i class="fa-solid fa-pen-to-square"></i> Prodotto manuale</button>
                         </div>
                         <div class="grid grid-cols-3 gap-2">
                             <button type="button" id="btn-invia-ordine-tavolo" onclick="inviaOrdineAutomatico()" class="col-span-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 px-3 rounded-xl text-xs uppercase tracking-wide flex items-center justify-center gap-1.5 shadow transition active:scale-95">
@@ -375,7 +375,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button type="button" id="btn-elenco-cucina" onclick="toggleRiepilogoProdotti('cucina')" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-layer-group mr-1"></i> Mostra Elenco (0)</button>
+                <button type="button" id="btn-riepilogo-cucina" onclick="toggleRiepilogo('cucina')" class="px-3 py-2 rounded-xl text-xs font-bold transition active:scale-95">Riepilogo</button>
                 <button type="button" id="btn-pronti-cucina" onclick="togglePannelloPronti('cucina')" class="bg-emerald-600/20 text-emerald-300 border border-emerald-600/40 px-3 py-2 rounded-xl text-xs font-bold transition">Pronti (0)</button>
                 <button type="button" onclick="chiudiVistaCucina()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">
                 <i class="fa-solid fa-xmark mr-1"></i> Chiudi
@@ -383,9 +383,9 @@
             </div>
         </div>
 
-        <div id="riepilogo-prodotti-cucina" class="hidden flex-1 overflow-y-auto p-4 pb-28"></div>
-
         <div id="pannello-pronti-cucina" class="hidden bg-slate-900/60 border-b border-slate-800 p-3 space-y-2 max-h-[45vh] overflow-y-auto shrink-0"></div>
+
+        <div id="riepilogo-cucina" class="hidden bg-slate-900 border-b border-slate-800 px-3 py-2 shrink-0 max-h-[30vh] overflow-y-auto"></div>
 
         <div id="container-ordini-cucina" class="flex-1 overflow-y-auto p-4 pb-28 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
     </div>
@@ -403,7 +403,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button type="button" id="btn-elenco-bar" onclick="toggleRiepilogoProdotti('bar')" class="bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-layer-group mr-1"></i> Mostra Elenco (0)</button>
+                <button type="button" id="btn-riepilogo-bar" onclick="toggleRiepilogo('bar')" class="px-3 py-2 rounded-xl text-xs font-bold transition active:scale-95">Riepilogo</button>
                 <button type="button" id="btn-pronti-bar" onclick="togglePannelloPronti('bar')" class="bg-emerald-600/20 text-emerald-300 border border-emerald-600/40 px-3 py-2 rounded-xl text-xs font-bold transition">Pronti (0)</button>
                 <button type="button" onclick="chiudiVistaBar()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">
                 <i class="fa-solid fa-xmark mr-1"></i> Chiudi
@@ -411,29 +411,29 @@
             </div>
         </div>
 
-        <div id="riepilogo-prodotti-bar" class="hidden flex-1 overflow-y-auto p-4 pb-28"></div>
-
         <div id="pannello-pronti-bar" class="hidden bg-slate-900/60 border-b border-slate-800 p-3 space-y-2 max-h-[45vh] overflow-y-auto shrink-0"></div>
+
+        <div id="riepilogo-bar" class="hidden bg-slate-900 border-b border-slate-800 px-3 py-2 shrink-0 max-h-[30vh] overflow-y-auto"></div>
 
         <div id="container-ordini-bar" class="flex-1 overflow-y-auto p-4 pb-28 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
     </div>
 
     <!-- ========================================== -->
-    <!-- MODALE STORICO TAVOLI & REPORT PRODOTTI    -->
+    <!-- MODALE STORICO TAVOLI CHIUSI               -->
     <!-- ========================================== -->
     <div id="modal-storico" class="hidden fixed inset-0 z-[60] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
-        <div class="w-full max-w-3xl bg-slate-900 border border-slate-800 rounded-3xl flex flex-col h-[90dvh] shadow-2xl overflow-hidden">
-            <div class="px-4 sm:px-5 py-3.5 bg-slate-800 border-b border-slate-700 flex items-center justify-between gap-2 shrink-0">
-                <div class="flex items-center gap-3 min-w-0">
-                    <i class="fa-solid fa-clock-rotate-left text-emerald-400 text-xl shrink-0"></i>
-                    <div class="min-w-0">
-                        <h2 class="font-bold text-base text-slate-100 leading-tight">Storico & Report Serale</h2>
-                        <span id="storico-totale-incassato" class="text-[11px] sm:text-xs text-emerald-400 font-semibold block truncate">Totale: € 0.00</span>
+        <div class="w-full max-w-3xl bg-slate-900 border border-slate-800 rounded-3xl flex flex-col h-[88dvh] shadow-2xl overflow-hidden">
+            <div class="px-5 py-4 bg-slate-800 border-b border-slate-700 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-clock-rotate-left text-emerald-400 text-xl"></i>
+                    <div>
+                        <h2 class="font-bold text-base text-slate-100">Storico Tavoli Chiusi</h2>
+                        <span id="storico-totale-incassato" class="text-xs text-emerald-400 font-semibold">Totale: € 0.00</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                    <button type="button" onclick="esportaStoricoCSV()" class="bg-slate-900 hover:bg-slate-700 text-emerald-400 border border-slate-700 px-2.5 py-1.5 rounded-xl text-xs font-bold transition" title="Esporta CSV">CSV</button>
-                    <button type="button" onclick="svuotaStorico()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 px-2.5 py-1.5 rounded-xl text-xs font-bold transition">
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="esportaStoricoCSV()" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold transition">CSV</button>
+                    <button type="button" onclick="svuotaStorico()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 px-3 py-1.5 rounded-xl text-xs font-bold transition">
                         Svuota
                     </button>
                     <button type="button" onclick="chiudiStoricoModal()" class="w-8 h-8 bg-slate-700/50 hover:bg-slate-700 text-slate-300 rounded-full flex items-center justify-center transition">
@@ -441,19 +441,16 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Schede Storico Tavoli vs Report Giornaliero Prodotti -->
-            <div class="grid grid-cols-2 gap-2 p-2.5 bg-slate-950 border-b border-slate-800 shrink-0">
-                <button type="button" id="tab-storico-tavoli" onclick="impostaSchedaStorico('tavoli')" class="py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition bg-amber-500 text-slate-950 shadow">
-                    <i class="fa-solid fa-receipt"></i> Tavoli Chiusi
-                </button>
-                <button type="button" id="tab-storico-report" onclick="impostaSchedaStorico('report')" class="py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition bg-slate-800 text-slate-200 border border-slate-700">
-                    <i class="fa-solid fa-chart-column text-emerald-400"></i> Report Prodotti
-                </button>
+            <div class="px-4 py-3 bg-slate-900 border-b border-slate-800 shrink-0">
+                <div class="flex items-center justify-between gap-2">
+                    <button type="button" onclick="toggleVendutoGiorno()" class="flex items-center gap-2 text-sm font-black text-amber-400 uppercase tracking-wide">
+                        <i class="fa-solid fa-chart-simple"></i> Venduto del giorno <i id="venduto-chevron" class="fa-solid fa-chevron-up text-[10px] text-slate-400"></i>
+                    </button>
+                    <input type="date" id="venduto-data" onchange="renderizzaVendutoGiorno()" class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+                </div>
+                <div id="venduto-giorno" class="mt-2 max-h-[30vh] overflow-y-auto"></div>
             </div>
-
             <div id="lista-storico-tavoli" class="flex-1 overflow-y-auto p-4 pb-24 space-y-2.5"></div>
-            <div id="pannello-report-giornaliero" class="hidden flex-1 overflow-y-auto p-4 pb-24 space-y-4"></div>
         </div>
     </div>
 
@@ -607,51 +604,20 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODALE COMPILAZIONE MANUALE / FUORI MENU   -->
-    <!-- ========================================== -->
     <div id="modal-supplemento" class="hidden fixed inset-0 z-[75] bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl space-y-3">
-            <div>
-                <h3 class="text-base font-bold text-sky-300 flex items-center gap-2">
-                    <i class="fa-solid fa-pen-to-square"></i> Prodotto Manuale / Fuori Menu
-                </h3>
-                <p class="text-[11px] text-slate-400 mt-0.5">Seleziona la categoria, descrivi la richiesta e imposta il prezzo.</p>
-            </div>
-
-            <div>
-                <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Categoria</label>
-                <select id="sup-categoria" onchange="aggiornaRepartiDaCategoriaManuale()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500"></select>
-            </div>
-
-            <div>
-                <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Descrizione prodotto / Richiesta cliente</label>
-                <input id="sup-desc" type="text" maxlength="60" placeholder="Es. Piatto personalizzato, Panino speciale..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500">
-            </div>
-
-            <div>
-                <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Prezzo (€)</label>
-                <input id="sup-prezzo" type="text" inputmode="decimal" placeholder="Es. 5,50" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500">
-            </div>
-
-            <div>
-                <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1.5">Invia comando al reparto</label>
-                <div class="grid grid-cols-2 gap-2">
-                    <label class="flex items-center justify-center gap-2 cursor-pointer bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-xs font-bold text-amber-300">
-                        <input type="checkbox" id="sup-in-cucina" class="accent-amber-500 w-4 h-4">
-                        <span><i class="fa-solid fa-utensils mr-1"></i> Cucina</span>
-                    </label>
-                    <label class="flex items-center justify-center gap-2 cursor-pointer bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-xs font-bold text-sky-300">
-                        <input type="checkbox" id="sup-in-bar" class="accent-sky-400 w-4 h-4">
-                        <span><i class="fa-solid fa-mug-hot mr-1"></i> Bar</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2 pt-1">
+        <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl max-h-[92vh] overflow-y-auto">
+            <h3 class="text-base font-bold text-sky-300 mb-3"><i class="fa-solid fa-pen-to-square mr-1"></i> Prodotto manuale</h3>
+            <label class="block text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-1">Categoria (decide se va in cucina o al bar)</label>
+            <select id="sup-categoria" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 mb-3 focus:outline-none focus:border-sky-500"></select>
+            <label class="block text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-1">Cosa vuole il cliente</label>
+            <textarea id="sup-desc" rows="2" maxlength="80" placeholder="Es. Panino con prosciutto, senza burro" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 mb-3 focus:outline-none focus:border-sky-500 resize-none"></textarea>
+            <label class="block text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-1">Prezzo € (da sommare al conto)</label>
+            <input id="sup-prezzo" type="text" inputmode="decimal" placeholder="es. 4,50" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 mb-4 focus:outline-none focus:border-sky-500">
+            <div class="grid grid-cols-2 gap-2 mb-2">
                 <button type="button" onclick="chiudiModalSupplemento()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">Annulla</button>
-                <button type="button" onclick="aggiungiSupplemento()" class="bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl text-xs transition">Aggiungi all'Ordine</button>
+                <button type="button" onclick="aggiungiSupplemento(false)" class="bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl text-xs transition">Aggiungi</button>
             </div>
+            <button type="button" onclick="aggiungiSupplemento(true)" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl text-xs uppercase tracking-wide transition active:scale-95"><i class="fa-solid fa-paper-plane"></i> Aggiungi e invia ordine</button>
         </div>
     </div>
 
@@ -771,8 +737,7 @@
             totalTavoli: 8,
             menu: JSON.parse(JSON.stringify(defaultMenu)),
             tavoli: {},
-            storico: [],
-            reportGiornalieri: {}
+            storico: []
         };
 
         let appData = JSON.parse(JSON.stringify(defaultData));
@@ -784,6 +749,20 @@
         let primoCaricamentoCompletato = false;
 
         const NUM_ASPORTO = 10;
+
+        // ---- Bozze (righe non ancora inviate) e coda di sincronizzazione ----
+        function bozzaValida(o) {
+            const t = parseInt(String((o && o.uuid) || "").split("_")[0], 10);
+            return !t || (Date.now() - t) < 12 * 3600 * 1000;
+        }
+
+        const CHIAVE_PENDING = "caffe_museo_pending";
+        function leggiPending() {
+            try { return JSON.parse(localStorage.getItem(CHIAVE_PENDING) || "{}") || {}; } catch (e) { return {}; }
+        }
+        function scriviPending(p) {
+            try { localStorage.setItem(CHIAVE_PENDING, JSON.stringify(p)); } catch (e) {}
+        }
 
         function idsTavoli() {
             const a = [];
@@ -844,14 +823,12 @@
                         prezzoUnitario: Number(item.prezzo) || 0,
                         nota: notaPulita,
                         quantita: 1,
-                        indici: [idx],
-                        haBozze: Boolean(item.bozza)
+                        indici: [idx]
                     });
                 } else {
                     const entry = mappa.get(chiave);
                     entry.quantita += 1;
                     entry.indici.push(idx);
-                    if (item.bozza) entry.haBozze = true;
                 }
             });
             return Array.from(mappa.values());
@@ -875,40 +852,9 @@
             };
         }
 
-        function raccogliBozzeLocali() {
-            const bozzeMap = new Map();
-            try {
-                const salvato = JSON.parse(localStorage.getItem("caffe_museo_pos_db") || "{}");
-                const tavLocali = salvato.tavoli || {};
-                Object.keys(tavLocali).forEach(k => {
-                    const t = tavLocali[k];
-                    if (t && Array.isArray(t.ordini)) {
-                        const b = t.ordini.filter(o => o && o.bozza);
-                        if (b.length > 0) bozzeMap.set(k, b);
-                    }
-                });
-            } catch (e) {}
-            if (appData && appData.tavoli) {
-                Object.keys(appData.tavoli).forEach(k => {
-                    const t = appData.tavoli[k];
-                    if (t && Array.isArray(t.ordini)) {
-                        const b = t.ordini.filter(o => o && o.bozza);
-                        if (b.length > 0) {
-                            const prev = bozzeMap.get(k) || [];
-                            b.forEach(item => {
-                                if (!prev.some(p => p.uuid === item.uuid)) prev.push(item);
-                            });
-                            bozzeMap.set(k, prev);
-                        }
-                    }
-                });
-            }
-            return bozzeMap;
-        }
-
         function normalizzaOggettoTavolo(raw, id) {
             if (!raw || typeof raw !== "object") return creaTavoloLibero(id);
-            const ordiniArr = Array.isArray(raw.ordini) ? raw.ordini : (raw.ordini ? Object.values(raw.ordini) : []);
+            const ordiniArr = (Array.isArray(raw.ordini) ? raw.ordini : (raw.ordini ? Object.values(raw.ordini) : [])).filter(o => !o.bozza || bozzaValida(o));
             const isOccupato = ordiniArr.length > 0;
             return {
                 id: Number(id),
@@ -978,10 +924,6 @@
 
             appData.storico.sort((a, b) => (b.id || 0) - (a.id || 0));
 
-            if (!appData.reportGiornalieri || typeof appData.reportGiornalieri !== "object") {
-                appData.reportGiornalieri = {};
-            }
-
             const rawTavoli = appData.tavoli || {};
             const nuoviTavoli = {};
             for (const i of idsTavoli()) {
@@ -996,14 +938,21 @@
             if (isApplyingRemote) return;
             const k = keyTavolo(idTavolo);
             appData.tavoli[k] = normalizzaOggettoTavolo(appData.tavoli[k], idTavolo);
-            appData.tavoli[k].updatedAt = Date.now();
+            const upd = Date.now();
+            appData.tavoli[k].updatedAt = upd;
+
+            // Segna il tavolo come "da confermare dal cloud": resta in coda finché Firebase non risponde OK,
+            // anche se il telefono si spegne o perde la rete.
+            const pend = leggiPending();
+            pend[idTavolo] = upd;
+            scriviPending(pend);
             localStorage.setItem("caffe_museo_pos_db", JSON.stringify(appData));
 
             if (isFirebaseInitialized && db) {
                 const copiaCloud = JSON.parse(JSON.stringify(appData.tavoli[k]));
                 copiaCloud.ordini = copiaCloud.ordini.filter(o => !o.bozza);
                 const perCloud = normalizzaOggettoTavolo(copiaCloud, idTavolo);
-                perCloud.updatedAt = appData.tavoli[k].updatedAt;
+                perCloud.updatedAt = upd;
                 db.ref(`barData/tavoli/${k}`).set(perCloud, (err) => {
                     if (err) {
                         ultimoErroreFirebase = err.message || "Permesso negato su Firebase";
@@ -1012,6 +961,8 @@
                     } else {
                         ultimoErroreFirebase = "";
                         aggiornaStatoCloudBadge("online");
+                        const p = leggiPending();
+                        if (p[idTavolo] === upd) { delete p[idTavolo]; scriviPending(p); }
                     }
                 });
             }
@@ -1041,7 +992,6 @@
                     delete payload.operatoreCorrente;
                     delete payload.tavoli;
                     delete payload.storico;
-                    delete payload.reportGiornalieri;
                     db.ref("barData").update(payload, gestisciEsitoScrittura);
                 }
             }
@@ -1094,22 +1044,12 @@
                 const data = snapshot.val();
                 if (data) {
                     const operatoreLocale = appData.operatoreCorrente;
-                    const bozzeLocali = raccogliBozzeLocali();
                     isApplyingRemote = true;
                     appData = Object.assign({}, defaultData, data);
                     if (operatoreLocale && Array.isArray(appData.operatori) && appData.operatori.includes(operatoreLocale)) {
                         appData.operatoreCorrente = operatoreLocale;
                     }
                     sanitizzaDati();
-                    bozzeLocali.forEach((bozze, k) => {
-                        const tv = appData.tavoli[k];
-                        if (tv) {
-                            bozze.forEach(b => {
-                                if (!tv.ordini.some(o => o.uuid === b.uuid)) tv.ordini.push(b);
-                            });
-                            if (tv.ordini.length > 0) tv.stato = "occupato";
-                        }
-                    });
                     localStorage.setItem("caffe_museo_pos_db", JSON.stringify(appData));
                     aggiornaInterfaccia();
                     if (tavoloSelezionatoId) {
@@ -1157,35 +1097,11 @@
             if (!isFirebaseInitialized || tavoliCaricati) primoCaricamentoCompletato = true;
         }
 
-        function inviaNotificaSistema(titolo, corpo, tag) {
-            if (!("Notification" in window) || Notification.permission !== "granted") return;
-            const opzioni = {
-                body: corpo,
-                tag: tag,
-                renotify: true,
-                requireInteraction: true,
-                vibrate: [500, 150, 500, 150, 500]
-            };
-            if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.ready
-                    .then(reg => reg.showNotification(titolo, opzioni))
-                    .catch(() => { try { new Notification(titolo, opzioni); } catch (e) {} });
-            } else {
-                try { new Notification(titolo, opzioni); } catch (e) {}
-            }
-        }
-
         function notificaProntoReparto(reparto, idTavolo) {
             if (["cucina", "bar"].includes(ruoloDispositivo())) return;
-            const tavoloNome = nomeTavolo(idTavolo);
-            mostraNotificaBanner(`${reparto} PRONTO - ${tavoloNome.toUpperCase()}!`);
+            mostraNotificaBanner(`${reparto} PRONTO - ${nomeTavolo(idTavolo).toUpperCase()}!`);
             emettiSuonoNotifica();
-            if ("vibrate" in navigator) navigator.vibrate([500, 150, 500, 150, 500]);
-            inviaNotificaSistema(
-                `${appData.nomeLocale} - ${reparto} PRONTO!`,
-                `Ordine pronto da ritirare per ${tavoloNome}`,
-                `pronto-${reparto}-${idTavolo}`
-            );
+            if ("vibrate" in navigator) navigator.vibrate([400, 150, 400]);
         }
 
         function ruoloDispositivo() {
@@ -1205,11 +1121,17 @@
             if ("vibrate" in navigator) {
                 navigator.vibrate([250, 120, 250]);
             }
-            inviaNotificaSistema(
-                `${appData.nomeLocale} - ${reparto}`,
-                `Nuovo ordine arrivato per ${nomeTavolo(idTavolo)}`,
-                `ordine-${reparto}-${idTavolo}`
-            );
+            if ("Notification" in window && Notification.permission === "granted") {
+                try {
+                    new Notification(`${appData.nomeLocale} - ${reparto}`, {
+                        body: `Nuovo ordine arrivato per il ${nomeTavolo(idTavolo)}`,
+                        tag: `ordine-${reparto}-${idTavolo}`,
+                        renotify: true
+                    });
+                } catch (e) {
+                    console.log("Notifica di sistema non inviata:", e);
+                }
+            }
         }
 
         function avviaConAuth() {
@@ -1268,30 +1190,67 @@
                     }
                 });
 
-                ["nomeLocale", "logoBase64", "pinCorretto", "adminPassword", "operatori", "pinOperatori", "notePredefinite", "totalTavoli", "menu", "tavoli", "reportGiornalieri"].forEach(k => {
+                ["nomeLocale", "logoBase64", "pinCorretto", "adminPassword", "operatori", "pinOperatori", "notePredefinite", "totalTavoli", "menu", "tavoli"].forEach(k => {
                     db.ref("barData/" + k).on("value", (snap) => {
                         const v = snap.val();
                         if (v === null && k === "menu") { salvaDati(); return; }
                         isApplyingRemote = true;
-                        const bozzeLocali = raccogliBozzeLocali();
-                        const notaSel = tavoloSelezionatoId ? getTavolo(tavoloSelezionatoId).notaOrdine : "";
+
+                        // 1) Prima di applicare i dati remoti, ricorda cosa c'è solo in locale:
+                        //    righe in bozza di TUTTI i tavoli e tavoli con scrittura non ancora confermata dal cloud
+                        const pendingNow = leggiPending();
+                        const bozzeLocali = {};
+                        const localiPending = {};
+                        Object.keys(appData.tavoli || {}).forEach(kk => {
+                            const t = appData.tavoli[kk];
+                            if (!t || !Array.isArray(t.ordini)) return;
+                            const bz = t.ordini.filter(o => o.bozza && bozzaValida(o));
+                            if (bz.length) bozzeLocali[kk] = { righe: bz, nota: t.notaOrdine || "", oraApertura: t.oraApertura, operatore: t.operatore, operatoreApertura: t.operatoreApertura };
+                            if (pendingNow[String(t.id)] !== undefined) localiPending[kk] = t;
+                        });
+
                         if (k === "tavoli") { tavoliRaw = v; tavoliCaricati = true; }
                         if (v !== null) appData[k] = v;
                         if (tavoliRaw) appData.tavoli = tavoliRaw;
                         sanitizzaDati();
-                        bozzeLocali.forEach((bozze, kTav) => {
-                            const tv = appData.tavoli[kTav];
-                            if (tv) {
-                                bozze.forEach(b => {
-                                    if (!tv.ordini.some(o => o.uuid === b.uuid)) tv.ordini.push(b);
-                                });
-                                if (tv.ordini.length > 0) tv.stato = "occupato";
-                            }
-                        });
-                        if (tavoloSelezionatoId && notaSel) {
-                            const tvSel = getTavolo(tavoloSelezionatoId);
-                            if (tvSel && !tvSel.notaOrdine) tvSel.notaOrdine = notaSel;
+
+                        // 2) Tavoli con scrittura non confermata: se il locale è più recente del cloud, vince il locale
+                        //    e viene rispedito (così cucina e bar ricevono davvero le righe)
+                        const daRipushare = [];
+                        if (tavoliCaricati) {
+                            Object.keys(localiPending).forEach(kk => {
+                                const loc = localiPending[kk];
+                                const idNum = String(loc.id);
+                                const remoto = tavoliRaw ? tavoliRaw[kk] : null;
+                                const remUpd = remoto ? (Number(remoto.updatedAt) || 0) : 0;
+                                const locUpd = Number(pendingNow[idNum]) || 0;
+                                if (locUpd > remUpd) {
+                                    appData.tavoli[kk] = normalizzaOggettoTavolo(loc, loc.id);
+                                    daRipushare.push(loc.id);
+                                } else if (locUpd === remUpd) {
+                                    appData.tavoli[kk] = normalizzaOggettoTavolo(loc, loc.id);
+                                } else {
+                                    const pp = leggiPending(); delete pp[idNum]; scriviPending(pp);
+                                }
+                            });
                         }
+
+                        // 3) Rimetti le bozze locali sopra i dati remoti
+                        Object.keys(bozzeLocali).forEach(kk => {
+                            const info = bozzeLocali[kk];
+                            const tv = appData.tavoli[kk];
+                            if (!tv) return;
+                            const eraLibero = tv.ordini.length === 0;
+                            info.righe.forEach(b => { if (!tv.ordini.some(o => o.uuid === b.uuid)) tv.ordini.push(b); });
+                            tv.stato = "occupato";
+                            if (eraLibero) {
+                                tv.oraApertura = info.oraApertura || tv.oraApertura;
+                                tv.operatore = info.operatore || tv.operatore;
+                                tv.operatoreApertura = info.operatoreApertura || tv.operatoreApertura;
+                            }
+                            if (info.nota && !tv.notaOrdine) tv.notaOrdine = info.nota;
+                        });
+
                         localStorage.setItem("caffe_museo_pos_db", JSON.stringify(appData));
                         controllaNuoviOrdiniInArrivo();
                         aggiornaInterfaccia();
@@ -1302,6 +1261,7 @@
                         isApplyingRemote = false;
                         ultimoErroreFirebase = "";
                         aggiornaStatoCloudBadge("online");
+                        [...new Set(daRipushare)].forEach(id => salvaTavoloSuCloud(id));
                     }, (err) => {
                         ultimoErroreFirebase = err.message || "Errore lettura Firebase";
                         aggiornaStatoCloudBadge("error");
@@ -1327,13 +1287,7 @@
         let wakeLockSentinel = null;
         let wakeLockVoluto = false;
         document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === "visible") {
-                if (wakeLockVoluto && !wakeLockSentinel) toggleWakeLock();
-                if (tavoloSelezionatoId) {
-                    renderizzaProdottiTab();
-                    renderizzaListaOrdiniTavolo();
-                }
-            }
+            if (document.visibilityState === "visible" && wakeLockVoluto && !wakeLockSentinel) toggleWakeLock();
         });
 
         async function toggleWakeLock() {
@@ -1592,9 +1546,6 @@
                     badgesHTML = `<span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400/50 font-bold text-[9px] px-1.5 py-0.5 rounded-full uppercase">Libero</span>`;
                 } else {
                     badgesHTML = `<span class="bg-rose-500 text-white font-bold text-[9px] px-1.5 py-0.5 rounded-full uppercase">Occupato</span>`;
-                    if (tav.ordini.some(o => o.bozza || (isProdottoCucina(o) && !o.inviatoCucina) || (isProdottoBar(o) && !o.inviatoBar))) {
-                        badgesHTML += `<span class="bg-amber-500 text-slate-950 font-black text-[9px] px-1.5 py-0.5 rounded-full">DA INVIARE</span>`;
-                    }
                     if (tav.statoCucina === "in_attesa") {
                         badgesHTML += `<span class="bg-amber-400 text-slate-950 font-black text-[9px] px-1.5 py-0.5 rounded-full"><i class="fa-solid fa-utensils"></i></span>`;
                     } else if (tav.statoCucina === "pronto" && (!tav.operatore || tav.operatore === appData.operatoreCorrente)) {
@@ -1694,9 +1645,9 @@
 
         function apriModalTavolo(idTavolo) {
             tavoloSelezionatoId = idTavolo;
+            impostaSchedaMobileTavolo("menu");
+
             const tav = getTavolo(idTavolo);
-            const haBozzePendenti = tav.ordini.some(o => o.bozza || (isProdottoCucina(o) && !o.inviatoCucina) || (isProdottoBar(o) && !o.inviatoBar));
-            impostaSchedaMobileTavolo(haBozzePendenti ? "ordine" : "menu");
 
             let modificato = false;
             if (tav.statoCucina === "pronto" && (!tav.operatore || tav.operatore === appData.operatoreCorrente)) {
@@ -1736,7 +1687,6 @@
                     if (!confirm("Ci sono articoli non inviati: chiudendo la scheda verranno eliminati. Chiudere senza inviare?")) return;
                     tav.ordini = tav.ordini.filter(o => !o.bozza);
                     if (tav.ordini.length === 0) appData.tavoli[keyTavolo(tavoloSelezionatoId)] = creaTavoloLibero(tavoloSelezionatoId);
-                    salvaTavoloSuCloud(tavoloSelezionatoId);
                 }
             }
             tavoloSelezionatoId = null;
@@ -1847,66 +1797,44 @@
             if (!tavoloSelezionatoId) return;
             const sel = document.getElementById("sup-categoria");
             sel.innerHTML = "";
-
             appData.menu.forEach((cat, idx) => {
                 if (cat.disattivata) return;
+                const rep = cat.inCucina && cat.inBar ? "Cucina + Bar" : cat.inCucina ? "Cucina" : cat.inBar ? "Bar" : "nessun reparto";
                 const opt = document.createElement("option");
                 opt.value = String(idx);
-                opt.textContent = cat.nome;
-                if (idx === categoriaSelezionataIndex) opt.selected = true;
+                opt.textContent = `${cat.nome} → ${rep}`;
                 sel.appendChild(opt);
             });
-
-            const optAltro = document.createElement("option");
-            optAltro.value = "altro";
-            optAltro.textContent = "Altro / Fuori Menu";
-            sel.appendChild(optAltro);
+            const soloConto = document.createElement("option");
+            soloConto.value = "solo";
+            soloConto.textContent = "Solo conto (supplemento, nessun reparto)";
+            sel.appendChild(soloConto);
+            const preselezionata = appData.menu[categoriaSelezionataIndex];
+            if (preselezionata && !preselezionata.disattivata) sel.value = String(categoriaSelezionataIndex);
 
             document.getElementById("sup-desc").value = "";
             document.getElementById("sup-prezzo").value = "";
-            aggiornaRepartiDaCategoriaManuale();
             document.getElementById("modal-supplemento").classList.remove("hidden");
-        }
-
-        function aggiornaRepartiDaCategoriaManuale() {
-            const val = document.getElementById("sup-categoria").value;
-            const chkCucina = document.getElementById("sup-in-cucina");
-            const chkBar = document.getElementById("sup-in-bar");
-            if (val === "altro") {
-                chkCucina.checked = true;
-                chkBar.checked = false;
-            } else {
-                const cat = appData.menu[parseInt(val, 10)];
-                chkCucina.checked = Boolean(cat && cat.inCucina);
-                chkBar.checked = Boolean(cat && cat.inBar);
-            }
         }
 
         function chiudiModalSupplemento() {
             document.getElementById("modal-supplemento").classList.add("hidden");
         }
 
-        function aggiungiSupplemento() {
+        function aggiungiSupplemento(inviaSubito = false) {
+            if (!tavoloSelezionatoId) return;
+            const scelta = document.getElementById("sup-categoria").value;
             const desc = document.getElementById("sup-desc").value.trim();
-            if (!desc) {
-                alert("Inserisci la descrizione del prodotto richiesto dal cliente.");
-                document.getElementById("sup-desc").focus();
-                return;
-            }
-            const prezzo = parseFloat(document.getElementById("sup-prezzo").value.replace(",", "."));
-            if (!isFinite(prezzo) || prezzo < 0) {
-                alert("Inserisci un prezzo valido (es. 5,50 oppure 0).");
-                document.getElementById("sup-prezzo").focus();
-                return;
-            }
+            const prezzoTxt = document.getElementById("sup-prezzo").value.trim().replace(",", ".");
+            const prezzo = prezzoTxt === "" ? 0 : parseFloat(prezzoTxt);
 
-            const selVal = document.getElementById("sup-categoria").value;
-            const catNome = selVal === "altro"
-                ? "Fuori Menu"
-                : ((appData.menu[parseInt(selVal, 10)] || {}).nome || "Fuori Menu");
-
-            const inCucina = document.getElementById("sup-in-cucina").checked;
-            const inBar = document.getElementById("sup-in-bar").checked;
+            const soloConto = scelta === "solo";
+            const cat = soloConto ? null : appData.menu[Number(scelta)];
+            if (!soloConto && !cat) { alert("Seleziona una categoria."); return; }
+            if (!desc) { alert("Scrivi cosa vuole il cliente."); return; }
+            if (!isFinite(prezzo) || prezzo < 0) { alert("Prezzo non valido (es. 1,50)."); return; }
+            if (soloConto && prezzo <= 0) { alert("Per un supplemento solo conto serve un prezzo maggiore di zero."); return; }
+            if (cat && !cat.inCucina && !cat.inBar && !confirm("Questa categoria non è collegata né a cucina né a bar: finirà solo nel conto. Continuare?")) return;
 
             const tav = getTavolo(tavoloSelezionatoId);
             if (tav.ordini.length === 0) {
@@ -1920,21 +1848,25 @@
                 uuid: uid,
                 id: "man_" + uid,
                 nome: desc,
-                categoriaManuale: catNome,
                 prezzo: Math.round(prezzo * 100) / 100,
-                nota: catNome !== "Fuori Menu" ? `[${catNome}]` : "",
-                inCucina: inCucina,
-                inBar: inBar,
+                nota: "",
+                inCucina: soloConto ? false : Boolean(cat.inCucina),
+                inBar: soloConto ? false : Boolean(cat.inBar),
                 inviatoCucina: false,
                 inviatoBar: false,
-                supplemento: true,
+                manuale: true,
+                supplemento: soloConto,
+                categoria: cat ? cat.nome : "",
                 bozza: true
             });
             salvaTavoloSuCloud(tavoloSelezionatoId);
             renderizzaListaOrdiniTavolo();
             renderizzaTavoli();
             chiudiModalSupplemento();
-            mostraNotificaBanner("PRODOTTO AGGIUNTO ALL'ORDINE!");
+
+            const listaEl = document.getElementById("lista-ordini-tavolo");
+            if (listaEl) requestAnimationFrame(() => { listaEl.scrollTop = listaEl.scrollHeight; });
+            if (inviaSubito) inviaOrdineAutomatico();
         }
 
         function aggiungiAlTavolo(prodotto) {
@@ -2017,13 +1949,12 @@
                     const primoIdx = gruppo.indici[0];
                     const subtotale = Math.round(gruppo.prezzoUnitario * gruppo.quantita * 100) / 100;
                     const row = document.createElement("div");
-                    row.className = `bg-slate-950 border ${gruppo.haBozze ? "border-amber-500/60" : "border-slate-800"} px-3.5 py-3 rounded-2xl flex items-center justify-between gap-2.5`;
+                    row.className = "bg-slate-950 border border-slate-800 px-3.5 py-3 rounded-2xl flex items-center justify-between gap-2.5";
 
                     row.innerHTML = `
                         <div class="flex-1 min-w-0">
-                            <div class="font-bold text-slate-100 text-sm sm:text-base leading-snug break-words flex items-center flex-wrap gap-1.5">
-                                <span>${gruppo.quantita > 1 ? `<span class="text-amber-400 font-black mr-1">${gruppo.quantita}×</span>` : ""}${esc(gruppo.nome)}</span>
-                                ${gruppo.haBozze ? `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-black px-1.5 py-0.5 rounded uppercase">Da inviare</span>` : ""}
+                            <div class="font-bold text-slate-100 text-sm sm:text-base leading-snug break-words">
+                                ${gruppo.quantita > 1 ? `<span class="text-amber-400 font-black mr-1.5">${gruppo.quantita}×</span>` : ""}${esc(gruppo.nome)}
                             </div>
                             ${gruppo.nota ? `<div class="text-xs text-amber-400 font-semibold mt-1 break-words"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(gruppo.nota)}</div>` : ""}
                         </div>
@@ -2125,7 +2056,7 @@
                 };
 
                 appData.storico.unshift(recordStorico);
-                aggiornaReportGiornalieroAutomatico(chiaveDataLocale(recordStorico.id));
+                
 
                 appData.tavoli[keyTavolo(idTavolo)] = creaTavoloLibero(idTavolo);
 
@@ -2229,10 +2160,9 @@
 
             const nuoveCucina = tav.ordini.filter(o => isProdottoCucina(o) && !o.inviatoCucina);
             const nuoveBar = tav.ordini.filter(o => isProdottoBar(o) && !o.inviatoBar);
-            const bozzeSoloConto = tav.ordini.filter(o => o.bozza && !isProdottoCucina(o) && !isProdottoBar(o));
 
-            if (nuoveCucina.length === 0 && nuoveBar.length === 0 && bozzeSoloConto.length === 0) {
-                alert("Nessuna riga nuova da inviare: è già tutto stato mandato.");
+            if (nuoveCucina.length === 0 && nuoveBar.length === 0 && !tav.ordini.some(o => o.bozza)) {
+                verificaERinviaConCloud(idTavolo);
                 return;
             }
 
@@ -2266,6 +2196,62 @@
             chiudiModalTavolo();
 
             mostraNotificaBanner(`ORDINE INVIATO A: ${repartiInviati.join(" + ") || "CONTO"}`);
+
+            // Se dopo qualche secondo il cloud non ha ancora confermato, avvisa (l'invio resta in coda e riparte da solo)
+            setTimeout(() => {
+                if (leggiPending()[idTavolo] !== undefined) {
+                    mostraNotificaBanner("ORDINE NON ANCORA ARRIVATO A CUCINA/BAR: CONTROLLA LA CONNESSIONE");
+                }
+            }, 6000);
+        }
+
+        // Quando il telefono dice "già inviato" ma cucina/bar non hanno ricevuto nulla:
+        // controlla cosa c'è davvero sul cloud e rimanda solo le righe che mancano.
+        function forzaReinvioRighe(idTavolo, righe) {
+            righe.forEach(o => {
+                o.inviatoCucina = false; o.inviatoBar = false;
+                o.prontoCucina = false; o.prontoBar = false;
+            });
+            inviaOrdineAutomatico();
+        }
+
+        function verificaERinviaConCloud(idTavolo) {
+            const tav = getTavolo(idTavolo);
+            const msgOk = "Nessuna riga nuova da inviare: è già tutto stato mandato (o le categorie non hanno un reparto attivo nel Pannello Admin).";
+            const candidate = tav.ordini.filter(o =>
+                (isProdottoCucina(o) && o.inviatoCucina && !o.prontoCucina) ||
+                (isProdottoBar(o) && o.inviatoBar && !o.prontoBar));
+            if (candidate.length === 0) { alert(msgOk); return; }
+
+            if (!isFirebaseInitialized || !db) {
+                if (confirm("Questo dispositivo non è collegato al cloud, quindi non posso verificare cosa è arrivato a cucina/bar.\n\nReinviare comunque le righe non ancora pronte?")) {
+                    forzaReinvioRighe(idTavolo, candidate);
+                }
+                return;
+            }
+
+            db.ref(`barData/tavoli/${keyTavolo(idTavolo)}`).once("value").then(snap => {
+                const remoto = snap.val();
+                const righeRemote = remoto ? (Array.isArray(remoto.ordini) ? remoto.ordini : Object.values(remoto.ordini || {})) : [];
+                const mappa = new Map(righeRemote.map(o => [o.uuid, o]));
+                const mancanti = candidate.filter(o => {
+                    const r = mappa.get(o.uuid);
+                    if (!r) return true;
+                    if (isProdottoCucina(o) && o.inviatoCucina && !r.inviatoCucina) return true;
+                    if (isProdottoBar(o) && o.inviatoBar && !r.inviatoBar) return true;
+                    return false;
+                });
+                if (mancanti.length === 0) {
+                    alert("Verificato sul cloud: tutte le righe risultano già arrivate a cucina/bar.");
+                } else {
+                    mostraNotificaBanner(`${mancanti.length} RIGHE NON ARRIVATE: LE REINVIO`);
+                    forzaReinvioRighe(idTavolo, mancanti);
+                }
+            }).catch(() => {
+                if (confirm("Non riesco a controllare il cloud (connessione assente?).\n\nReinviare comunque le righe non ancora pronte?")) {
+                    forzaReinvioRighe(idTavolo, candidate);
+                }
+            });
         }
 
         // =========================================================================
@@ -2314,17 +2300,10 @@
                     const articoliCucina = raggruppaArticoli(filtrati);
                     conteggioInAttesa++;
 
-                    const listaHTML = articoliCucina.map((art, idxArt) => {
-                        const f = infoFatto("cucina", tav, art, filtrati);
-                        return `
+                    const listaHTML = articoliCucina.map((art, nr) => { const f = infoFatto("cucina", tav, art, filtrati); return `
                         <li class="${f.cls}" onclick="${f.onclick}">
-                            <div class="flex items-start gap-2.5">
-                                <span class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-amber-500 text-slate-950 font-black text-sm md:text-base flex items-center justify-center shrink-0 mt-0.5">${idxArt + 1}</span>
-                                <div class="flex-1 min-w-0">
-                                    <span class="font-bold ${f.tutte ? "text-white font-black" : "text-slate-100"} text-lg md:text-2xl">${art.quantita > 1 ? `${art.quantita}× ` : ""}${esc(art.nome)}</span>${f.chip}
-                                    ${art.nota ? `<p class="text-base md:text-xl ${f.tutte ? "text-rose-100" : "text-amber-400"} font-semibold mt-0.5"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(art.nota)}</p>` : ""}
-                                </div>
-                            </div>
+                            <span class="inline-flex items-center justify-center w-7 h-7 md:w-10 md:h-10 mr-2 rounded-full bg-amber-500 text-slate-950 font-black text-sm md:text-xl align-middle">${nr + 1}</span><span class="font-bold ${f.tutte ? "text-white" : "text-slate-100"} text-lg md:text-2xl">${art.quantita > 1 ? `${art.quantita}× ` : ""}${esc(art.nome)}</span>${f.chip}
+                            ${art.nota ? `<p class="text-base md:text-xl ${f.tutte ? "text-amber-200" : "text-amber-400"} font-semibold mt-0.5"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(art.nota)}</p>` : ""}
                         </li>
                     `; }).join("");
 
@@ -2339,6 +2318,7 @@
                                     ${tav.oraInvioCucina ? `<span class="text-sm md:text-base text-slate-400 ml-2"><i class="fa-regular fa-clock"></i> ${tav.oraInvioCucina}</span>${badgeAttesa(tav.tsInvioCucina)}` : ""}
                                 </div>
                                 <div class="flex items-center gap-2">
+                                    <span class="text-xs bg-slate-800 text-slate-200 font-bold px-2 py-1 rounded-lg border border-slate-700">${filtrati.length} pz</span>
                                     <span class="text-xs bg-slate-800 text-slate-300 px-2 py-1 rounded-lg border border-slate-700">${esc(tav.operatore || "--")}</span>
                                     <button type="button" onclick="stampaTicketReparto(${tav.id}, 'CUCINA')" class="w-8 h-8 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 rounded-lg flex items-center justify-center transition active:scale-95" title="Stampa Ticket Cucina">
                                         <i class="fa-solid fa-print text-xs"></i>
@@ -2356,7 +2336,6 @@
             }
 
             ordinaCardPerAttesa(container);
-            renderizzaRiepilogoProdotti("cucina");
             renderizzaPronti("cucina");
             if (conteggioInAttesa === 0) {
                 container.innerHTML = `
@@ -2368,221 +2347,16 @@
             }
         }
 
-
-        function chiaveProdottoRiepilogo(item) {
-            const notaPulita = (item.nota || "").trim();
-            return `${item.id || item.nome}__${notaPulita}`;
-        }
-
-        function raccogliRiepilogoReparto(reparto) {
-            const isCucina = reparto === "cucina";
-            const keyFatto = isCucina ? "fattoCucina" : "fattoBar";
-            const mappa = new Map();
-
-            for (const i of idsTavoli()) {
-                const tav = getTavolo(i);
-                if (!tav || (isCucina ? tav.statoCucina : tav.statoBar) !== "in_attesa" || !Array.isArray(tav.ordini)) continue;
-
-                tav.ordini.forEach((o) => {
-                    const matchReparto = isCucina
-                        ? (isProdottoCucina(o) && o.inviatoCucina && !o.prontoCucina)
-                        : (isProdottoBar(o) && o.inviatoBar && !o.prontoBar);
-                    if (!matchReparto) return;
-
-                    const chiave = chiaveProdottoRiepilogo(o);
-                    if (!mappa.has(chiave)) {
-                        mappa.set(chiave, {
-                            chiave,
-                            nome: o.nome,
-                            nota: (o.nota || "").trim(),
-                            totale: 0,
-                            fatte: 0,
-                            riferimenti: []
-                        });
-                    }
-                    const entry = mappa.get(chiave);
-                    entry.totale += 1;
-                    if (o[keyFatto]) entry.fatte += 1;
-                    entry.riferimenti.push({ idTavolo: tav.id, uuid: o.uuid });
-                });
-            }
-
-            return Array.from(mappa.values());
-        }
-
-        function toggleRiepilogoProdotti(reparto) {
-            const box = document.getElementById("riepilogo-prodotti-" + reparto);
-            const gridOrdini = document.getElementById("container-ordini-" + reparto);
-            const pannelloPronti = document.getElementById("pannello-pronti-" + reparto);
-            if (!box || !gridOrdini) return;
-
-            const apreElencoUnico = box.classList.contains("hidden");
-            if (apreElencoUnico) {
-                if (pannelloPronti) pannelloPronti.classList.add("hidden");
-                box.classList.remove("hidden");
-                gridOrdini.classList.add("hidden");
-            } else {
-                box.classList.add("hidden");
-                gridOrdini.classList.remove("hidden");
-            }
-            renderizzaRiepilogoProdotti(reparto);
-        }
-
-        function renderizzaRiepilogoProdotti(reparto) {
-            const box = document.getElementById("riepilogo-prodotti-" + reparto);
-            const gridOrdini = document.getElementById("container-ordini-" + reparto);
-            const btn = document.getElementById("btn-elenco-" + reparto);
-            const isCucina = reparto === "cucina";
-            const items = raccogliRiepilogoReparto(reparto);
-            const totaleResidui = items.reduce((acc, it) => acc + Math.max(0, it.totale - it.fatte), 0);
-            const aperto = box && !box.classList.contains("hidden");
-
-            if (gridOrdini) {
-                if (aperto) gridOrdini.classList.add("hidden");
-                else gridOrdini.classList.remove("hidden");
-            }
-
-            if (btn) {
-                const label = aperto ? "Mostra Tavoli" : "Mostra Elenco";
-                const icona = aperto ? "fa-table-cells-large" : "fa-layer-group";
-                btn.innerHTML = `<i class="fa-solid ${icona} mr-1"></i> ${label} (${totaleResidui})`;
-            }
-
-            if (!box) return;
-
-            if (items.length === 0) {
-                box.innerHTML = `<div class="max-w-2xl mx-auto py-16 text-center text-slate-500">
-                    <i class="fa-solid ${isCucina ? "fa-utensils" : "fa-mug-hot"} text-4xl mb-3 block"></i>
-                    <p class="text-sm font-semibold">Nessun prodotto in attesa ${isCucina ? "in cucina" : "al bar"}</p>
-                </div>`;
-                return;
-            }
-
-            const borderCol = isCucina ? "border-amber-500/50" : "border-sky-500/50";
-            const titleCol = isCucina ? "text-amber-400" : "text-sky-400";
-            const numBgCol = isCucina ? "bg-amber-400 text-slate-950" : "bg-sky-400 text-slate-950";
-
-            const righeHTML = items.map((it, idx) => {
-                const residui = Math.max(0, it.totale - it.fatte);
-                const completato = residui === 0;
-                const rowCls = completato
-                    ? "py-3 px-3 rounded-xl bg-rose-600/85 border-2 border-rose-300 shadow-lg shadow-rose-950/70 cursor-pointer select-none transition"
-                    : (it.fatte > 0
-                        ? "py-3 px-3 rounded-xl bg-amber-500/20 border border-amber-400/60 cursor-pointer select-none transition active:scale-[0.99]"
-                        : "py-3 px-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-600 cursor-pointer select-none transition active:scale-[0.99]");
-
-                const chip = completato
-                    ? '<span class="ml-2 bg-white text-rose-700 text-xs md:text-base font-black px-2.5 py-0.5 rounded-full shadow">✓ FATTO</span>'
-                    : (it.fatte > 0
-                        ? `<span class="ml-2 bg-amber-400 text-slate-950 text-xs md:text-base font-black px-2.5 py-0.5 rounded-full">${it.fatte}/${it.totale}</span>`
-                        : "");
-
-                return `<li class="${rowCls}" onclick="completaProdottoRiepilogo('${reparto}', '${encodeURIComponent(it.chiave)}')">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="flex items-start gap-3 min-w-0">
-                            <span class="w-8 h-8 md:w-9 md:h-9 rounded-lg ${numBgCol} font-black text-base md:text-lg flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span>
-                            <div class="min-w-0">
-                                <div class="font-black text-xl md:text-3xl ${completato ? "text-white" : "text-slate-100"} leading-tight">
-                                    <span class="${completato ? "text-rose-100" : titleCol}">${residui}×</span> ${esc(it.nome)}${chip}
-                                </div>
-                                ${it.nota ? `<p class="text-base md:text-xl ${completato ? "text-rose-100" : titleCol} font-semibold mt-0.5"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(it.nota)}</p>` : ""}
-                            </div>
-                        </div>
-                        <span class="text-xs font-bold uppercase px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 shrink-0">
-                            ${completato ? "Completato" : "Tocca per fare"}
-                        </span>
-                    </div>
-                </li>`;
-            }).join("");
-
-            box.innerHTML = `
-                <div class="max-w-3xl mx-auto bg-slate-900 border-2 ${borderCol} rounded-2xl p-4 sm:p-5 shadow-2xl">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4 gap-2">
-                        <div>
-                            <span class="text-2xl md:text-3xl font-black ${titleCol} uppercase">ORDINE UNICO ${isCucina ? "CUCINA" : "BAR"}</span>
-                            <p class="text-xs md:text-sm text-slate-400 mt-0.5">Tutti i prodotti sommati dai tavoli • Tocca ogni riga per segnare fatta</p>
-                        </div>
-                        <span class="text-xs font-black px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 shrink-0">
-                            Totale: ${totaleResidui} pz
-                        </span>
-                    </div>
-                    <ul class="space-y-2">${righeHTML}</ul>
-                </div>
-            `;
-        }
-
-        function completaProdottoRiepilogo(reparto, chiaveEncoded) {
-            const chiave = decodeURIComponent(chiaveEncoded);
-            const isCucina = reparto === "cucina";
-            const keyFatto = isCucina ? "fattoCucina" : "fattoBar";
-            const tavoliToccati = new Set();
-            let modificato = false;
-
-            for (const i of idsTavoli()) {
-                const tav = getTavolo(i);
-                if (!tav || (isCucina ? tav.statoCucina : tav.statoBar) !== "in_attesa" || !Array.isArray(tav.ordini)) continue;
-
-                tav.ordini.forEach((o) => {
-                    const matchReparto = isCucina
-                        ? (isProdottoCucina(o) && o.inviatoCucina && !o.prontoCucina)
-                        : (isProdottoBar(o) && o.inviatoBar && !o.prontoBar);
-                    if (matchReparto && chiaveProdottoRiepilogo(o) === chiave && !o[keyFatto]) {
-                        o[keyFatto] = true;
-                        modificato = true;
-                        tavoliToccati.add(i);
-                    }
-                });
-            }
-
-            if (!modificato) return;
-
-            tavoliToccati.forEach((idTav) => {
-                const tav = getTavolo(idTav);
-                const residui = tav.ordini.filter((o) => isCucina
-                    ? (isProdottoCucina(o) && o.inviatoCucina && !o.prontoCucina && !o.fattoCucina)
-                    : (isProdottoBar(o) && o.inviatoBar && !o.prontoBar && !o.fattoBar)
-                );
-
-                // Se tutte le righe del reparto su quel tavolo sono segnate come FATTO, le marca come pronte così spariscono automaticamente dai vari ordini
-                if (residui.length === 0) {
-                    if (isCucina) {
-                        tav.ordini.forEach((o) => {
-                            if (isProdottoCucina(o) && o.inviatoCucina && !o.prontoCucina && o.fattoCucina) {
-                                o.prontoCucina = true;
-                            }
-                        });
-                        tav.statoCucina = "pronto";
-                        tav.oraProntoCucina = oraCorrenteStr();
-                    } else {
-                        tav.ordini.forEach((o) => {
-                            if (isProdottoBar(o) && o.inviatoBar && !o.prontoBar && o.fattoBar) {
-                                o.prontoBar = true;
-                            }
-                        });
-                        tav.statoBar = "pronto";
-                        tav.oraProntoBar = oraCorrenteStr();
-                    }
-                }
-                salvaTavoloSuCloud(idTav);
-            });
-
-            controllaNuoviOrdiniInArrivo();
-            renderizzaVistaCucina();
-            renderizzaVistaBar();
-            renderizzaTavoli();
-            aggiornaBadgeRepartiHeader();
-        }
-
         function infoFatto(reparto, tav, art, filtrati) {
             const key = reparto === "cucina" ? "fattoCucina" : "fattoBar";
             const righe = art.indici.map(i => filtrati[i]);
             const fatte = righe.filter(o => o[key]).length;
             const tutte = righe.length > 0 && fatte >= righe.length;
             const uuids = righe.map(o => o.uuid).join(",");
-            const cls = "py-2.5 border-b last:border-0 cursor-pointer select-none rounded-xl px-2.5 -mx-2 transition " + (tutte ? "bg-rose-600/85 border-2 border-rose-300 shadow-lg shadow-rose-950/70" : (fatte > 0 ? "bg-amber-500/25 border border-amber-400/60" : "border-slate-800"));
+            const cls = "py-2.5 border-b last:border-0 cursor-pointer select-none rounded-lg px-2 -mx-2 transition " + (tutte ? "bg-red-600 border-red-400" : "border-slate-800");
             const chip = tutte
-                ? '<span class="ml-2 bg-white text-rose-700 text-xs md:text-base font-black px-2.5 py-0.5 rounded-full shadow">✓ FATTO</span>'
-                : (fatte > 0 ? `<span class="ml-2 bg-amber-400 text-slate-950 text-xs md:text-base font-black px-2 py-0.5 rounded-full">${fatte}/${righe.length}</span>` : "");
+                ? '<span class="ml-2 bg-white text-red-700 text-xs md:text-base font-black px-2 py-0.5 rounded-full">FATTO</span>'
+                : (fatte > 0 ? `<span class="ml-2 bg-amber-500 text-slate-950 text-xs md:text-base font-black px-2 py-0.5 rounded-full">${fatte}/${righe.length}</span>` : "");
             return { cls, chip, tutte, onclick: `toggleFatto('${reparto}', ${tav.id}, '${uuids}')` };
         }
 
@@ -2592,8 +2366,11 @@
             const lista = uuids.split(",");
             const righe = tav.ordini.filter(o => lista.includes(o.uuid));
             if (righe.length === 0) return;
-            const nuovoStato = !righe.every(o => o[key]);
-            righe.forEach(o => { o[key] = nuovoStato; });
+            if (righe.every(o => o[key])) {
+                righe.forEach(o => { o[key] = false; });
+            } else {
+                righe.find(o => !o[key])[key] = true;
+            }
             salvaTavoloSuCloud(idTavolo);
             renderizzaVistaCucina();
             renderizzaVistaBar();
@@ -2606,16 +2383,97 @@
         }
 
         function togglePannelloPronti(reparto) {
-            const pannello = document.getElementById("pannello-pronti-" + reparto);
-            const boxElenco = document.getElementById("riepilogo-prodotti-" + reparto);
-            if (pannello.classList.contains("hidden") && boxElenco && !boxElenco.classList.contains("hidden")) {
-                boxElenco.classList.add("hidden");
-                renderizzaRiepilogoProdotti(reparto);
+            document.getElementById("pannello-pronti-" + reparto).classList.toggle("hidden");
+        }
+
+        // ---- Riepilogo in alto: totale prodotti da preparare, con "fatto" automatico sugli ordini ----
+        function righeDaPreparare(reparto) {
+            const isCucina = reparto === "cucina";
+            const out = [];
+            for (const i of idsTavoli()) {
+                const tav = getTavolo(i);
+                if (!tav || tav.ordini.length === 0) continue;
+                if ((isCucina ? tav.statoCucina : tav.statoBar) !== "in_attesa") continue;
+                const ts = (isCucina ? tav.tsInvioCucina : tav.tsInvioBar) || 0;
+                tav.ordini.forEach(o => {
+                    const dep = isCucina ? (isProdottoCucina(o) && o.inviatoCucina && !o.prontoCucina)
+                                         : (isProdottoBar(o) && o.inviatoBar && !o.prontoBar);
+                    if (dep) out.push({ tav, o, ts });
+                });
             }
-            pannello.classList.toggle("hidden");
+            out.sort((a, b) => a.ts - b.ts);
+            return out;
+        }
+
+        function chiaveProdotto(o) {
+            return String(o.id || "").startsWith("man_") ? "nome__" + o.nome.trim().toLowerCase() : "id__" + (o.id || o.nome);
+        }
+
+        function riepilogoAttivo(reparto) {
+            return localStorage.getItem("caffe_museo_riepilogo_" + reparto) !== "0";
+        }
+
+        function toggleRiepilogo(reparto) {
+            localStorage.setItem("caffe_museo_riepilogo_" + reparto, riepilogoAttivo(reparto) ? "0" : "1");
+            renderizzaRiepilogo(reparto);
+        }
+
+        function renderizzaRiepilogo(reparto) {
+            const box = document.getElementById("riepilogo-" + reparto);
+            if (!box) return;
+            const btn = document.getElementById("btn-riepilogo-" + reparto);
+            const attivo = riepilogoAttivo(reparto);
+            if (btn) {
+                btn.className = "px-3 py-2 rounded-xl text-xs font-bold transition active:scale-95 border " + (attivo
+                    ? "bg-slate-100 text-slate-900 border-white"
+                    : "bg-slate-800 text-slate-300 border-slate-700");
+                btn.innerHTML = `<i class="fa-solid ${attivo ? "fa-eye" : "fa-eye-slash"} mr-1"></i>Riepilogo`;
+            }
+            if (!attivo) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+            const key = reparto === "cucina" ? "fattoCucina" : "fattoBar";
+            const colore = reparto === "cucina" ? "amber" : "sky";
+            const mappa = new Map();
+            righeDaPreparare(reparto).forEach(({ o }) => {
+                if (o[key]) return;
+                const c = chiaveProdotto(o);
+                if (!mappa.has(c)) mappa.set(c, { nome: o.nome, qta: 0, note: 0 });
+                const e = mappa.get(c);
+                e.qta += 1;
+                if ((o.nota || "").trim()) e.note += 1;
+            });
+            if (mappa.size === 0) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+
+            const totale = [...mappa.values()].reduce((a, e) => a + e.qta, 0);
+            const chips = [...mappa.entries()].map(([c, e]) => `
+                <div class="flex items-center gap-1 bg-slate-950 border border-${colore}-500/50 rounded-xl pl-3 pr-1 py-1">
+                    <span class="font-black text-${colore}-400 text-lg md:text-2xl">${e.qta}×</span>
+                    <span class="font-bold text-slate-100 text-sm md:text-xl">${esc(e.nome)}${e.note ? ` <span class="text-xs text-amber-300">(${e.note} con nota)</span>` : ""}</span>
+                    <button type="button" onclick="segnaFattoRiepilogo('${reparto}', decodeURIComponent('${encodeURIComponent(c)}'), 1)" class="ml-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-lg px-3 py-2 text-xs md:text-base active:scale-95 transition" title="Segna 1 come fatto">FATTO</button>
+                    ${e.qta > 1 ? `<button type="button" onclick="segnaFattoRiepilogo('${reparto}', decodeURIComponent('${encodeURIComponent(c)}'), ${e.qta})" class="bg-emerald-800 hover:bg-emerald-700 text-white font-black rounded-lg px-2 py-2 text-xs md:text-base active:scale-95 transition" title="Segna tutti come fatti">TUTTI</button>` : ""}
+                </div>`).join("");
+
+            box.innerHTML = `<div class="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-1.5">Da preparare ora · ${totale} pezzi</div><div class="flex flex-wrap gap-2">${chips}</div>`;
+            box.classList.remove("hidden");
+        }
+
+        function segnaFattoRiepilogo(reparto, chiave, quante) {
+            const key = reparto === "cucina" ? "fattoCucina" : "fattoBar";
+            const toccati = new Set();
+            let rimaste = quante;
+            // parte dagli ordini più vecchi
+            righeDaPreparare(reparto).forEach(({ tav, o }) => {
+                if (rimaste <= 0 || o[key] || chiaveProdotto(o) !== chiave) return;
+                o[key] = true;
+                toccati.add(tav.id);
+                rimaste--;
+            });
+            toccati.forEach(id => salvaTavoloSuCloud(id));
+            renderizzaVistaCucina();
+            renderizzaVistaBar();
         }
 
         function renderizzaPronti(reparto) {
+            renderizzaRiepilogo(reparto);
             const pannello = document.getElementById("pannello-pronti-" + reparto);
             const btn = document.getElementById("btn-pronti-" + reparto);
             if (!pannello || !btn) return;
@@ -2706,17 +2564,10 @@
                     const articoliBar = raggruppaArticoli(filtrati);
                     conteggioInAttesa++;
 
-                    const listaHTML = articoliBar.map((art, idxArt) => {
-                        const f = infoFatto("bar", tav, art, filtrati);
-                        return `
+                    const listaHTML = articoliBar.map((art, nr) => { const f = infoFatto("bar", tav, art, filtrati); return `
                         <li class="${f.cls}" onclick="${f.onclick}">
-                            <div class="flex items-start gap-2.5">
-                                <span class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-sky-400 text-slate-950 font-black text-sm md:text-base flex items-center justify-center shrink-0 mt-0.5">${idxArt + 1}</span>
-                                <div class="flex-1 min-w-0">
-                                    <span class="font-bold ${f.tutte ? "text-white font-black" : "text-slate-100"} text-lg md:text-2xl">${art.quantita > 1 ? `${art.quantita}× ` : ""}${esc(art.nome)}</span>${f.chip}
-                                    ${art.nota ? `<p class="text-base md:text-xl ${f.tutte ? "text-rose-100" : "text-sky-400"} font-semibold mt-0.5"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(art.nota)}</p>` : ""}
-                                </div>
-                            </div>
+                            <span class="inline-flex items-center justify-center w-7 h-7 md:w-10 md:h-10 mr-2 rounded-full bg-sky-500 text-slate-950 font-black text-sm md:text-xl align-middle">${nr + 1}</span><span class="font-bold ${f.tutte ? "text-white" : "text-slate-100"} text-lg md:text-2xl">${art.quantita > 1 ? `${art.quantita}× ` : ""}${esc(art.nome)}</span>${f.chip}
+                            ${art.nota ? `<p class="text-base md:text-xl ${f.tutte ? "text-sky-100" : "text-sky-400"} font-semibold mt-0.5"><i class="fa-regular fa-note-sticky mr-1"></i>${esc(art.nota)}</p>` : ""}
                         </li>
                     `; }).join("");
 
@@ -2731,6 +2582,7 @@
                                     ${tav.oraInvioBar ? `<span class="text-sm md:text-base text-slate-400 ml-2"><i class="fa-regular fa-clock"></i> ${tav.oraInvioBar}</span>${badgeAttesa(tav.tsInvioBar)}` : ""}
                                 </div>
                                 <div class="flex items-center gap-2">
+                                    <span class="text-xs bg-slate-800 text-slate-200 font-bold px-2 py-1 rounded-lg border border-slate-700">${filtrati.length} pz</span>
                                     <span class="text-xs bg-slate-800 text-slate-300 px-2 py-1 rounded-lg border border-slate-700">${esc(tav.operatore || "--")}</span>
                                     <button type="button" onclick="stampaTicketReparto(${tav.id}, 'BAR')" class="w-8 h-8 bg-slate-800 hover:bg-slate-700 text-sky-400 border border-slate-700 rounded-lg flex items-center justify-center transition active:scale-95" title="Stampa Ticket Bar">
                                         <i class="fa-solid fa-print text-xs"></i>
@@ -2748,7 +2600,6 @@
             }
 
             ordinaCardPerAttesa(container);
-            renderizzaRiepilogoProdotti("bar");
             renderizzaPronti("bar");
             if (conteggioInAttesa === 0) {
                 container.innerHTML = `
@@ -2860,152 +2711,74 @@
             document.getElementById("modal-dettaglio-ordine").classList.add("hidden");
         }
 
-        let schedaStoricoAttiva = "tavoli";
-        let dataReportSelezionata = "";
-
-        function chiaveDataLocale(tsOrDate = Date.now()) {
-            const d = tsOrDate instanceof Date ? tsOrDate : new Date(Number(tsOrDate) || Date.now());
-            const y = d.getFullYear();
-            const m = String(d.getMonth() + 1).padStart(2, "0");
-            const g = String(d.getDate()).padStart(2, "0");
-            return `${y}-${m}-${g}`;
-        }
-
-        function formattaDataItaliana(chiaveData) {
-            if (!chiaveData || !/^\d{4}-\d{2}-\d{2}$/.test(chiaveData)) return chiaveData || "";
-            const [y, m, g] = chiaveData.split("-");
-            return `${g}/${m}/${y}`;
-        }
-
-        function costruisciReportPerData(chiaveData) {
-            const records = appData.storico.filter(s => chiaveDataLocale(s.id) === chiaveData);
-            const mappaProdotti = new Map();
-            let totContantiCents = 0;
-            let totCartaCents = 0;
-            let totGeneraleCents = 0;
-            let totPezzi = 0;
-
-            records.forEach(rec => {
-                const impCents = Math.round((Number(rec.totale) || 0) * 100);
-                totGeneraleCents += impCents;
-                if (rec.metodo === "Contanti") totContantiCents += impCents;
-                else if (rec.metodo === "Carta") totCartaCents += impCents;
-
-                (rec.ordini || []).forEach(item => {
-                    const nome = (item.nome || "Prodotto").trim();
-                    const key = nome.toLowerCase();
-                    const prezzoCents = Math.round((Number(item.prezzo) || 0) * 100);
-                    const rep = isProdottoCucina(item) && isProdottoBar(item)
-                        ? "Cucina/Bar"
-                        : (isProdottoCucina(item) ? "Cucina" : (isProdottoBar(item) ? "Bar" : "Altro"));
-
-                    if (!mappaProdotti.has(key)) {
-                        mappaProdotti.set(key, {
-                            nome,
-                            reparto: rep,
-                            quantita: 0,
-                            incassoCents: 0
-                        });
-                    }
-                    const entry = mappaProdotti.get(key);
-                    entry.quantita += 1;
-                    entry.incassoCents += prezzoCents;
-                    totPezzi += 1;
-                });
-            });
-
-            const prodotti = Array.from(mappaProdotti.values())
-                .sort((a, b) => b.quantita - a.quantita || a.nome.localeCompare(b.nome, "it"))
-                .map(p => ({
-                    nome: p.nome,
-                    reparto: p.reparto,
-                    quantita: p.quantita,
-                    incasso: Math.round(p.incassoCents) / 100
-                }));
-
-            return {
-                data: chiaveData,
-                numeroConti: records.length,
-                totalePezzi: totPezzi,
-                totaleIncasso: totGeneraleCents / 100,
-                totaleContanti: totContantiCents / 100,
-                totaleCarta: totCartaCents / 100,
-                prodotti,
-                aggiornatoAt: Date.now()
-            };
-        }
-
-        function aggiornaReportGiornalieroAutomatico(chiaveData = chiaveDataLocale()) {
-            if (!appData.reportGiornalieri || typeof appData.reportGiornalieri !== "object") {
-                appData.reportGiornalieri = {};
-            }
-            const rep = costruisciReportPerData(chiaveData);
-            if (rep.numeroConti === 0) {
-                delete appData.reportGiornalieri[chiaveData];
-                localStorage.setItem("caffe_museo_pos_db", JSON.stringify(appData));
-                if (isFirebaseInitialized && db) {
-                    db.ref("barData/reportGiornalieri/" + chiaveData).remove();
-                }
-            } else {
-                appData.reportGiornalieri[chiaveData] = rep;
-                localStorage.setItem("caffe_museo_pos_db", JSON.stringify(appData));
-                if (isFirebaseInitialized && db) {
-                    db.ref("barData/reportGiornalieri/" + chiaveData).set(rep);
-                }
-            }
-            return rep;
-        }
-
-        function sincronizzaTuttiReportGiornalieri() {
-            const dateTrovate = new Set([chiaveDataLocale()]);
-            appData.storico.forEach(s => dateTrovate.add(chiaveDataLocale(s.id)));
-            Object.keys(appData.reportGiornalieri || {}).forEach(d => dateTrovate.add(d));
-            dateTrovate.forEach(d => aggiornaReportGiornalieroAutomatico(d));
-        }
-
-        function impostaSchedaStorico(scheda) {
-            schedaStoricoAttiva = scheda;
-            const listaTavoli = document.getElementById("lista-storico-tavoli");
-            const pannelloReport = document.getElementById("pannello-report-giornaliero");
-            const tabTavoli = document.getElementById("tab-storico-tavoli");
-            const tabReport = document.getElementById("tab-storico-report");
-
-            if (!listaTavoli || !pannelloReport || !tabTavoli || !tabReport) return;
-
-            if (scheda === "report") {
-                listaTavoli.classList.add("hidden");
-                pannelloReport.classList.remove("hidden");
-                tabReport.className = "py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition bg-emerald-500 text-slate-950 shadow";
-                tabTavoli.className = "py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition bg-slate-800 text-slate-200 border border-slate-700";
-                renderizzaReportGiornaliero();
-            } else {
-                pannelloReport.classList.add("hidden");
-                listaTavoli.classList.remove("hidden");
-                tabTavoli.className = "py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition bg-amber-500 text-slate-950 shadow";
-                tabReport.className = "py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition bg-slate-800 text-slate-200 border border-slate-700";
-                renderizzaStorico();
-            }
-        }
-
-        function apriStoricoModal(schedaIniziale = "tavoli") {
+        function apriStoricoModal() {
             document.getElementById("modal-storico").classList.remove("hidden");
-            if (!dataReportSelezionata) dataReportSelezionata = chiaveDataLocale();
+            document.getElementById("venduto-data").value = dataLocaleISO(new Date());
             if (isFirebaseInitialized && db) {
                 db.ref("barData/storico").once("value", (s) => {
                     const v = s.val();
-                    appData.storico = v ? Object.values(v) : [];
+                    if (v) appData.storico = Object.values(v);
                     sanitizzaDati();
-                    sincronizzaTuttiReportGiornalieri();
-                    impostaSchedaStorico(schedaIniziale);
+                    renderizzaStorico();
                 });
             } else {
-                sincronizzaTuttiReportGiornalieri();
-                impostaSchedaStorico(schedaIniziale);
+                renderizzaStorico();
             }
         }
 
         function chiudiStoricoModal() {
             document.getElementById("modal-storico").classList.add("hidden");
+        }
+
+        function dataLocaleISO(d) {
+            const z = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`;
+        }
+
+        let vendutoGiornoAperto = true;
+        function toggleVendutoGiorno() {
+            vendutoGiornoAperto = !vendutoGiornoAperto;
+            renderizzaVendutoGiorno();
+        }
+
+        // Totale prodotti venduti in un giorno (default oggi), sommando tutti i conti chiusi di quel giorno
+        function renderizzaVendutoGiorno() {
+            const box = document.getElementById("venduto-giorno");
+            const inp = document.getElementById("venduto-data");
+            const chev = document.getElementById("venduto-chevron");
+            if (!box || !inp) return;
+            if (!inp.value) inp.value = dataLocaleISO(new Date());
+            if (chev) chev.className = `fa-solid ${vendutoGiornoAperto ? "fa-chevron-up" : "fa-chevron-down"} text-[10px] text-slate-400`;
+            if (!vendutoGiornoAperto) { box.classList.add("hidden"); return; }
+            box.classList.remove("hidden");
+
+            const conti = appData.storico.filter(r => dataLocaleISO(new Date(r.id)) === inp.value);
+            const mappa = new Map();
+            let pezzi = 0;
+            let centesimi = 0;
+            conti.forEach(r => (r.ordini || []).forEach(o => {
+                const c = chiaveProdotto(o);
+                if (!mappa.has(c)) mappa.set(c, { nome: o.nome, qta: 0, cent: 0 });
+                const e = mappa.get(c);
+                const cent = Math.round((Number(o.prezzo) || 0) * 100);
+                e.qta += 1; e.cent += cent;
+                pezzi += 1; centesimi += cent;
+            }));
+
+            if (mappa.size === 0) {
+                box.innerHTML = `<p class="text-xs text-slate-500 py-2">Nessuna vendita in questa data.</p>`;
+                return;
+            }
+            const righe = [...mappa.values()].sort((a, b) => b.qta - a.qta || a.nome.localeCompare(b.nome));
+            box.innerHTML = `
+                <div class="text-[11px] font-bold text-emerald-400 mb-1.5">${pezzi} pezzi • ${conti.length} conti • € ${(centesimi / 100).toFixed(2)}</div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    ${righe.map(e => `
+                        <div class="flex items-center justify-between gap-2 bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5">
+                            <span class="text-sm text-slate-100 min-w-0 truncate"><span class="font-black text-amber-400 mr-1">${e.qta}×</span>${esc(e.nome)}</span>
+                            <span class="text-xs font-bold text-slate-400 shrink-0">€ ${(e.cent / 100).toFixed(2)}</span>
+                        </div>`).join("")}
+                </div>`;
         }
 
         function contiOggi() {
@@ -3021,9 +2794,10 @@
         function renderizzaStorico() {
             const container = document.getElementById("lista-storico-tavoli");
             container.innerHTML = "";
+            renderizzaVendutoGiorno();
 
             const totaleIncassato = appData.storico.reduce((acc, s) => acc + Math.round((Number(s.totale) || 0) * 100), 0) / 100;
-            document.getElementById("storico-totale-incassato").textContent = `Oggi (${contiOggi().length} conti): € ${totaleMetodo()} • Contanti € ${totaleMetodo("Contanti")} • Carta € ${totaleMetodo("Carta")} • Totale € ${totaleIncassato.toFixed(2)}`;
+            document.getElementById("storico-totale-incassato").textContent = `Oggi (${contiOggi().length} conti): € ${totaleMetodo()} • Contanti € ${totaleMetodo("Contanti")} • Carta € ${totaleMetodo("Carta")} • Storico totale € ${totaleIncassato.toFixed(2)}`;
 
             if (appData.storico.length === 0) {
                 container.innerHTML = `<p class="text-center text-slate-500 text-sm py-12">Nessun tavolo chiuso nello storico.</p>`;
@@ -3032,23 +2806,22 @@
 
             appData.storico.forEach((rec, idx) => {
                 const card = document.createElement("div");
-                card.className = "bg-slate-950 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2.5";
+                card.className = "bg-slate-950 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-3";
                 card.innerHTML = `
-                    <div class="min-w-0 flex-1">
-                        <div class="flex items-center gap-2 flex-wrap">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
                             <span class="font-bold text-sm text-amber-400">${nomeTavolo(rec.tavolo)}</span>
                             <span class="text-xs font-black text-emerald-400">€ ${Number(rec.totale).toFixed(2)}</span>
-                            ${rec.metodo ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">${esc(rec.metodo)}</span>` : ""}
                         </div>
                         <div class="text-[11px] text-slate-400 mt-0.5 truncate">
                             Chiuso: ${rec.oraChiusura} • Op: ${esc(rec.operatoreChiusura)} • ${(rec.ordini || []).length} art.
                         </div>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0">
+                    <div class="flex items-center gap-2 shrink-0">
                         <button type="button" onclick="apriDettaglioStorico(${idx})" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition">
                             Dettaglio
                         </button>
-                        <button type="button" onclick="eliminaRecordStorico(${idx})" class="w-9 h-9 bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 rounded-xl flex items-center justify-center transition active:scale-95" title="Elimina questo tavolo dallo storico">
+                        <button type="button" onclick="eliminaVenditaStorico(${idx})" class="w-9 h-9 bg-rose-500/15 hover:bg-rose-500/30 text-rose-400 border border-rose-500/40 rounded-xl flex items-center justify-center transition active:scale-95" title="Elimina vendita (test)">
                             <i class="fa-solid fa-trash text-xs"></i>
                         </button>
                     </div>
@@ -3057,196 +2830,41 @@
             });
         }
 
-        function eliminaRecordStorico(idx) {
-            const rec = appData.storico[idx];
-            if (!rec) return;
-            const msg = `Eliminare dallo storico ${nomeTavolo(rec.tavolo)} (€ ${Number(rec.totale).toFixed(2)} - ${rec.oraChiusura})?
-Verrà aggiornato automaticamente anche il report giornaliero.`;
-            if (!confirm(msg)) return;
-
-            const chiaveData = chiaveDataLocale(rec.id);
-            appData.storico.splice(idx, 1);
-            if (isFirebaseInitialized && db && rec.id) {
-                db.ref("barData/storico/" + rec.id).remove();
-            }
-            aggiornaReportGiornalieroAutomatico(chiaveData);
-            localStorage.setItem("caffe_museo_pos_db", JSON.stringify(appData));
-            renderizzaStorico();
-            if (schedaStoricoAttiva === "report") renderizzaReportGiornaliero();
-            mostraNotificaBanner("TAVOLO RIMOSSO DALLO STORICO!");
-        }
-
-        function cambiaDataReport(nuovaData) {
-            dataReportSelezionata = nuovaData || chiaveDataLocale();
-            renderizzaReportGiornaliero();
-        }
-
-        function renderizzaReportGiornaliero() {
-            const container = document.getElementById("pannello-report-giornaliero");
-            if (!container) return;
-
-            const oggi = chiaveDataLocale();
-            if (!dataReportSelezionata) dataReportSelezionata = oggi;
-
-            const rep = aggiornaReportGiornalieroAutomatico(dataReportSelezionata);
-            const dateDisponibili = Array.from(new Set([
-                oggi,
-                ...Object.keys(appData.reportGiornalieri || {}),
-                ...appData.storico.map(s => chiaveDataLocale(s.id))
-            ])).sort().reverse();
-
-            const opzioniDateHTML = dateDisponibili.map(d => {
-                const label = d === oggi ? `Oggi (${formattaDataItaliana(d)})` : formattaDataItaliana(d);
-                return `<option value="${d}" ${d === dataReportSelezionata ? "selected" : ""}>${label}</option>`;
-            }).join("");
-
-            const righeProdottiHTML = rep.prodotti.length > 0
-                ? rep.prodotti.map((p, i) => `
-                    <div class="flex items-center justify-between gap-3 py-2.5 px-3 rounded-xl bg-slate-900/90 border border-slate-800">
-                        <div class="flex items-center gap-2.5 min-w-0">
-                            <span class="min-w-[3rem] px-2 py-1 rounded-lg bg-emerald-500 text-slate-950 font-black text-sm text-center shrink-0">${p.quantita}×</span>
-                            <div class="min-w-0">
-                                <div class="font-bold text-sm sm:text-base text-slate-100 truncate">${esc(p.nome)}</div>
-                                <div class="text-[11px] text-slate-400">${esc(p.reparto)}</div>
-                            </div>
-                        </div>
-                        <span class="font-black text-sm text-amber-400 shrink-0">€ ${Number(p.incasso).toFixed(2)}</span>
-                    </div>
-                `).join("")
-                : `<div class="py-10 text-center text-slate-500 text-xs">
-                    <i class="fa-solid fa-box-open text-3xl mb-2 block opacity-60"></i>
-                    Nessun prodotto venduto nella giornata selezionata.
-                </div>`;
-
-            container.innerHTML = `
-                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 space-y-3">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                        <div>
-                            <div class="text-xs font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i> Report Serale Automatico
-                            </div>
-                            <p class="text-[11px] text-slate-400 mt-0.5">Si aggiorna automaticamente ad ogni conto chiuso</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <select onchange="cambiaDataReport(this.value)" class="bg-slate-900 border border-slate-700 text-slate-100 text-xs font-bold px-3 py-2 rounded-xl focus:outline-none focus:border-emerald-500">
-                                ${opzioniDateHTML}
-                            </select>
-                            <button type="button" onclick="stampaReportGiornaliero('${dataReportSelezionata}')" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition active:scale-95" title="Stampa riepilogo serale">
-                                <i class="fa-solid fa-print"></i> Stampa
-                            </button>
-                            <button type="button" onclick="esportaReportGiornalieroCSV('${dataReportSelezionata}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition active:scale-95">
-                                CSV
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
-                            <div class="text-[10px] uppercase text-slate-400 font-bold">Totale Pezzi</div>
-                            <div class="text-lg font-black text-emerald-400">${rep.totalePezzi} pz</div>
-                        </div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
-                            <div class="text-[10px] uppercase text-slate-400 font-bold">Incasso Giorno</div>
-                            <div class="text-lg font-black text-amber-400">€ ${rep.totaleIncasso.toFixed(2)}</div>
-                        </div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
-                            <div class="text-[10px] uppercase text-slate-400 font-bold">Contanti</div>
-                            <div class="text-sm font-black text-slate-200 mt-0.5">€ ${rep.totaleContanti.toFixed(2)}</div>
-                        </div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
-                            <div class="text-[10px] uppercase text-slate-400 font-bold">Carta (${rep.numeroConti} conti)</div>
-                            <div class="text-sm font-black text-slate-200 mt-0.5">€ ${rep.totaleCarta.toFixed(2)}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5">
-                    <div class="flex items-center justify-between mb-2.5">
-                        <span class="text-xs font-black uppercase tracking-wider text-slate-300">Riepilogo Prodotti Venduti (${formattaDataItaliana(dataReportSelezionata)})</span>
-                        <span class="text-[11px] text-slate-400 font-semibold">${rep.prodotti.length} voci</span>
-                    </div>
-                    <div class="space-y-2">${righeProdottiHTML}</div>
-                </div>
-            `;
-        }
-
-        function stampaReportGiornaliero(chiaveData) {
-            const rep = aggiornaReportGiornalieroAutomatico(chiaveData);
-            if (rep.prodotti.length === 0) {
-                alert("Nessun prodotto da stampare per questa giornata.");
-                return;
-            }
-            const areaStampa = document.getElementById("area-stampa-ticket");
-            const righeHTML = rep.prodotti.map(p => `
-                <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
-                    <span>${p.quantita}x ${esc(p.nome)}</span>
-                    <span>€ ${Number(p.incasso).toFixed(2)}</span>
-                </div>
-            `).join("");
-
-            areaStampa.innerHTML = `
-                <div style="text-align:center; font-weight:bold; font-size:16px;">${esc((appData.nomeLocale || "CAFFÈ MUSEO").toUpperCase())}</div>
-                <div style="text-align:center; font-weight:bold; font-size:13px; margin:4px 0;">REPORT PRODOTTI GIORNALIERO</div>
-                <div style="text-align:center; font-size:12px;">Data: ${formattaDataItaliana(chiaveData)}</div>
-                <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
-                ${righeHTML}
-                <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
-                <div style="display:flex; justify-content:space-between; font-weight:bold;">
-                    <span>TOTALE PEZZI:</span>
-                    <span>${rep.totalePezzi}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:12px; margin-top:3px;">
-                    <span>Contanti: € ${rep.totaleContanti.toFixed(2)}</span>
-                    <span>Carta: € ${rep.totaleCarta.toFixed(2)}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:15px; margin-top:4px;">
-                    <span>INCASSO TOTALE:</span>
-                    <span>€ ${rep.totaleIncasso.toFixed(2)}</span>
-                </div>
-            `;
-            window.print();
-        }
-
-        function esportaReportGiornalieroCSV(chiaveData) {
-            const rep = aggiornaReportGiornalieroAutomatico(chiaveData);
-            const righe = ["Data;Prodotto;Reparto;Quantita;Incasso"];
-            rep.prodotti.forEach(p => {
-                righe.push([formattaDataItaliana(chiaveData), p.nome, p.reparto, p.quantita, Number(p.incasso).toFixed(2).replace(".", ",")].join(";"));
-            });
-            righe.push(["", "TOTALE", "", rep.totalePezzi, rep.totaleIncasso.toFixed(2).replace(".", ",")].join(";"));
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(new Blob(["\ufeff" + righe.join("\\n")], { type: "text/csv;charset=utf-8" }));
-            a.download = `report_prodotti_${chiaveData}.csv`;
-            a.click();
-        }
-
         function apriDettaglioStorico(idx) {
             const rec = appData.storico[idx];
             if (!rec) return;
             mostraDettaglioScheda(`Storico - ${nomeTavolo(rec.tavolo)}`, rec);
         }
 
+        function eliminaVenditaStorico(idx) {
+            const rec = appData.storico[idx];
+            if (!rec) return;
+            const descr = `${nomeTavolo(rec.tavolo)} • € ${Number(rec.totale).toFixed(2)} • chiuso ${rec.oraChiusura}`;
+            if (prompt(`Password amministratore per eliminare questa vendita:\n${descr}`) !== appData.adminPassword) { alert("Password errata."); return; }
+            if (!confirm(`Eliminare definitivamente questa vendita?\n${descr}\n\nNon potrà essere recuperata e verrà tolta dai totali.`)) return;
+            appData.storico = appData.storico.filter(r => r.id !== rec.id);
+            if (isFirebaseInitialized && db && rec.id !== undefined) db.ref("barData/storico/" + rec.id).remove();
+            localStorage.setItem("caffe_museo_pos_db", JSON.stringify(appData));
+            renderizzaStorico();
+            mostraNotificaBanner("VENDITA ELIMINATA");
+        }
+
         function esportaStoricoCSV() {
             const righe = ["Chiusura;Tavolo;Operatore;Articoli;Totale;Pagamento"];
             appData.storico.forEach(s => righe.push([s.oraChiusura, nomeTavolo(s.tavolo), s.operatoreChiusura, (s.ordini || []).length, Number(s.totale).toFixed(2).replace(".", ","), s.metodo || ""].join(";")));
             const a = document.createElement("a");
-            a.href = URL.createObjectURL(new Blob(["\ufeff" + righe.join("\\n")], { type: "text/csv;charset=utf-8" }));
+            a.href = URL.createObjectURL(new Blob(["\ufeff" + righe.join("\n")], { type: "text/csv;charset=utf-8" }));
             a.download = "storico_caffe_museo_" + new Date().toISOString().slice(0, 10) + ".csv";
             a.click();
         }
 
         function svuotaStorico() {
             if (prompt("Password amministratore per svuotare lo storico:") !== appData.adminPassword) { alert("Password errata."); return; }
-            if (confirm("Vuoi cancellare tutto lo storico dei tavoli chiusi e i report giornalieri?")) {
+            if (confirm("Vuoi cancellare tutto lo storico dei tavoli chiusi?")) {
                 appData.storico = [];
-                appData.reportGiornalieri = {};
-                if (isFirebaseInitialized && db) {
-                    db.ref("barData/storico").remove();
-                    db.ref("barData/reportGiornalieri").remove();
-                }
+                if (isFirebaseInitialized && db) db.ref("barData/storico").remove();
                 salvaDati();
                 renderizzaStorico();
-                if (schedaStoricoAttiva === "report") renderizzaReportGiornaliero();
             }
         }
 
@@ -3341,8 +2959,8 @@ Verrà aggiornato automaticamente anche il report giornaliero.`;
             if (articoli.length === 0) return;
 
             const areaStampa = document.getElementById("area-stampa-ticket");
-            const articoliHTML = articoli.map((item, idx) => `
-                <div style="font-size:14px; font-weight:bold; margin-top:4px;">${idx + 1}) ${item.quantita > 1 ? `${item.quantita}x ` : ""}${esc(item.nome)}</div>
+            const articoliHTML = articoli.map((item, nr) => `
+                <div style="font-size:14px; font-weight:bold; margin-top:4px;">${nr + 1}) ${item.quantita > 1 ? `${item.quantita}x ` : ""}${esc(item.nome)}</div>
                 ${item.nota ? `<div style="font-size:12px; font-weight:bold; padding-left:10px;">--> ${esc(item.nota)}</div>` : ""}
             `).join("");
 
