@@ -117,8 +117,8 @@
     </div>
 
     <!-- HEADER BAR -->
-    <header class="bg-slate-900 border-b border-slate-800 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2 shrink-0 relative z-20">
-        <div class="flex items-center gap-2.5 min-w-0">
+    <header class="bg-slate-900 border-b border-slate-800 px-3 sm:px-4 py-2.5 flex flex-wrap items-center justify-between gap-x-2 gap-y-2 shrink-0 relative z-20">
+        <div class="flex items-center gap-2.5 min-w-0 max-w-full">
             <div id="header-logo-wrapper" class="w-9 h-9 bg-amber-500 text-slate-950 font-black rounded-xl flex items-center justify-center text-base shadow-lg shrink-0 overflow-hidden">
                 CM
             </div>
@@ -127,11 +127,11 @@
                     <h1 id="header-nome-locale" class="font-bold text-sm sm:text-base leading-none text-slate-100 truncate">Caffè Museo</h1>
                     <button type="button" onclick="mostraDiagnosticaCloud()" id="stato-cloud-badge" class="w-2.5 h-2.5 rounded-full bg-slate-600 shrink-0 cursor-pointer" title="Stato connessione Cloud"></button>
                 </div>
-                <span id="header-sync-text" class="text-[10px] text-slate-400 font-medium tracking-wider uppercase">Connessione...</span>
+                <span id="header-sync-text" class="block text-[10px] text-slate-400 font-medium tracking-wider uppercase whitespace-nowrap mt-0.5">Connessione...</span>
             </div>
         </div>
 
-        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div class="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 w-full sm:w-auto">
             <!-- Selettore Operatore -->
             <div class="relative">
                 <select id="select-operatore" onchange="cambiaOperatore(this.value)" class="bg-slate-800 border border-slate-700 text-xs text-amber-400 font-semibold py-2 px-2.5 pr-6 rounded-xl focus:outline-none focus:border-amber-500 appearance-none cursor-pointer"></select>
@@ -184,7 +184,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center flex-wrap gap-2 w-full sm:w-auto">
                 <button type="button" onclick="forzaSincronizzazioneCloud()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-emerald-400 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition active:scale-95" title="Forza aggiornamento dal Cloud">
                     <i class="fa-solid fa-rotate"></i>
                     <span class="hidden sm:inline">Sincronizza</span>
@@ -198,7 +198,7 @@
                     </select>
                     <button type="button" id="btn-wake-lock" onclick="toggleWakeLock()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition" title="Impedisce allo schermo di spegnersi">
                     <i class="fa-solid fa-sun text-slate-400"></i>
-                    <span id="txt-wake-lock">Schermo Auto</span>
+                    <span id="txt-wake-lock" class="whitespace-nowrap">Schermo Auto</span>
                 </button>
 
                 <button type="button" id="btn-notifiche" onclick="attivaNotifichePush()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition" title="Abilita avvisi sonori e notifiche">
@@ -206,7 +206,7 @@
                     <span id="txt-notifiche" class="hidden sm:inline">Avvisi</span>
                 </button>
 
-                <div class="flex items-center gap-1 ml-1">
+                <div class="flex items-center gap-1 ml-auto shrink-0">
                     <button type="button" onclick="modificaNumeroTavoli(-1)" class="w-8 h-8 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg flex items-center justify-center font-bold text-slate-300 text-sm active:scale-95 transition">-</button>
                     <input type="number" id="input-num-tavoli" min="1" max="100" value="8" onchange="impostaNumeroTavoli(this.value)" class="w-12 bg-slate-950 border border-slate-700 text-center font-bold text-amber-400 text-sm py-1 rounded-lg focus:outline-none focus:border-amber-500">
                     <button type="button" onclick="modificaNumeroTavoli(1)" class="w-8 h-8 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg flex items-center justify-center font-bold text-slate-300 text-sm active:scale-95 transition">+</button>
@@ -375,7 +375,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button type="button" id="btn-riepilogo-cucina" onclick="toggleRiepilogo('cucina')" class="px-3 py-2 rounded-xl text-xs font-bold transition active:scale-95">Riepilogo</button>
+                <div id="sel-riepilogo-cucina" class="flex items-center bg-slate-950 border border-slate-700 rounded-xl p-0.5 gap-0.5"></div>
                 <button type="button" id="btn-pronti-cucina" onclick="togglePannelloPronti('cucina')" class="bg-emerald-600/20 text-emerald-300 border border-emerald-600/40 px-3 py-2 rounded-xl text-xs font-bold transition">Pronti (0)</button>
                 <button type="button" onclick="chiudiVistaCucina()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">
                 <i class="fa-solid fa-xmark mr-1"></i> Chiudi
@@ -403,7 +403,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button type="button" id="btn-riepilogo-bar" onclick="toggleRiepilogo('bar')" class="px-3 py-2 rounded-xl text-xs font-bold transition active:scale-95">Riepilogo</button>
+                <div id="sel-riepilogo-bar" class="flex items-center bg-slate-950 border border-slate-700 rounded-xl p-0.5 gap-0.5"></div>
                 <button type="button" id="btn-pronti-bar" onclick="togglePannelloPronti('bar')" class="bg-emerald-600/20 text-emerald-300 border border-emerald-600/40 px-3 py-2 rounded-xl text-xs font-bold transition">Pronti (0)</button>
                 <button type="button" onclick="chiudiVistaBar()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">
                 <i class="fa-solid fa-xmark mr-1"></i> Chiudi
@@ -1564,9 +1564,9 @@
                 card.onclick = () => apriModalTavolo(i);
 
                 card.innerHTML = `
-                    <div class="flex items-center justify-between gap-1 mb-2">
-                        <span class="font-bold text-base ${occupato ? "text-rose-300" : "text-emerald-300"}">${nomeTavolo(i)}</span>
-                        <div class="flex items-center gap-1 flex-wrap justify-end">${badgesHTML}</div>
+                    <div class="flex flex-col gap-1 mb-2">
+                        <span class="font-bold text-base whitespace-nowrap ${occupato ? "text-rose-300" : "text-emerald-300"}">${nomeTavolo(i)}</span>
+                        <div class="flex items-center gap-1 flex-wrap min-h-[20px]">${badgesHTML}</div>
                     </div>
                     <div class="my-1.5">
                         <span class="text-2xl font-black ${occupato ? "text-white" : "text-emerald-300/80"}">€ ${totaleTavolo.toFixed(2)}</span>
@@ -2409,27 +2409,40 @@
             return String(o.id || "").startsWith("man_") ? "nome__" + o.nome.trim().toLowerCase() : "id__" + (o.id || o.nome);
         }
 
-        function riepilogoAttivo(reparto) {
-            return localStorage.getItem("caffe_museo_riepilogo_" + reparto) !== "0";
+        // Tre stati del pulsante Riepilogo: "off" (solo ordini dei tavoli), "on" (riepilogo + ordini), "solo" (solo riepilogo)
+        function statoRiepilogo(reparto) {
+            const v = localStorage.getItem("caffe_museo_riepilogo_" + reparto);
+            if (v === "0" || v === "off") return "off";
+            if (v === "solo") return "solo";
+            return "on";
         }
 
-        function toggleRiepilogo(reparto) {
-            localStorage.setItem("caffe_museo_riepilogo_" + reparto, riepilogoAttivo(reparto) ? "0" : "1");
+        function impostaRiepilogo(reparto, stato) {
+            localStorage.setItem("caffe_museo_riepilogo_" + reparto, stato);
             renderizzaRiepilogo(reparto);
         }
 
         function renderizzaRiepilogo(reparto) {
             const box = document.getElementById("riepilogo-" + reparto);
             if (!box) return;
-            const btn = document.getElementById("btn-riepilogo-" + reparto);
-            const attivo = riepilogoAttivo(reparto);
-            if (btn) {
-                btn.className = "px-3 py-2 rounded-xl text-xs font-bold transition active:scale-95 border " + (attivo
-                    ? "bg-slate-100 text-slate-900 border-white"
-                    : "bg-slate-800 text-slate-300 border-slate-700");
-                btn.innerHTML = `<i class="fa-solid ${attivo ? "fa-eye" : "fa-eye-slash"} mr-1"></i>Riepilogo`;
+            const stato = statoRiepilogo(reparto);
+            const solo = stato === "solo";
+            const sel = document.getElementById("sel-riepilogo-" + reparto);
+            if (sel) {
+                const voci = [
+                    { v: "off", icona: "fa-receipt", testo: "Ordini" },
+                    { v: "on", icona: "fa-layer-group", testo: "Entrambi" },
+                    { v: "solo", icona: "fa-list-ol", testo: "Riepilogo" }
+                ];
+                sel.innerHTML = voci.map(x => `<button type="button" onclick="impostaRiepilogo('${reparto}', '${x.v}')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition active:scale-95 ${stato === x.v ? "bg-amber-500 text-slate-950" : "text-slate-300 hover:bg-slate-800"}"><i class="fa-solid ${x.icona} mr-1"></i>${x.testo}</button>`).join("");
             }
-            if (!attivo) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+            // in "solo" le schede dei tavoli spariscono e il riepilogo occupa tutto lo spazio
+            const cont = document.getElementById("container-ordini-" + reparto);
+            if (cont) cont.classList.toggle("hidden", solo);
+            box.classList.toggle("max-h-[30vh]", !solo);
+            box.classList.toggle("flex-1", solo);
+            box.classList.toggle("pb-28", solo);
+            if (stato === "off") { box.classList.add("hidden"); box.innerHTML = ""; return; }
             const key = reparto === "cucina" ? "fattoCucina" : "fattoBar";
             const colore = reparto === "cucina" ? "amber" : "sky";
             const mappa = new Map();
@@ -2441,7 +2454,15 @@
                 e.qta += 1;
                 if ((o.nota || "").trim()) e.note += 1;
             });
-            if (mappa.size === 0) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+            if (mappa.size === 0) {
+                if (solo) {
+                    box.innerHTML = `<p class="text-slate-500 text-center text-sm py-10">Nessun prodotto da preparare.</p>`;
+                    box.classList.remove("hidden");
+                } else {
+                    box.classList.add("hidden"); box.innerHTML = "";
+                }
+                return;
+            }
 
             const totale = [...mappa.values()].reduce((a, e) => a + e.qta, 0);
             const chips = [...mappa.entries()].map(([c, e]) => `
